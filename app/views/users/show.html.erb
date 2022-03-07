@@ -1,1 +1,9 @@
-<p>このページはプロフィールページです。</p>
+<div class="user-action-common">
+  <%= link_to edit_user_registration_path do %>
+
+    <div>link</div>
+  <% end %>
+  <span>情報を編集<span>
+
+<%= @user.name %>
+<%= @user.self_introduction %>
