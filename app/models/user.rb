@@ -7,6 +7,8 @@ class User < ApplicationRecord
   validates :name,presence: true
   validates :self_introduction,length: { maximum: 500 }
 
+  mount_uploader :profile_image, ProfileImageUploader
+
   def update_without_current_password(params, *options)
 
     if params[:password].blank? && params[:password_confirmation].blank?
