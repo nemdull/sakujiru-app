@@ -36,3 +36,5 @@ yarn-debug.log*
 .yarn-integrity
 
 public/uploads/
+db/dummy_images
+db/moji
