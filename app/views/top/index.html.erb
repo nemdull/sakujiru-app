@@ -3,3 +3,7 @@
 
 <%= link_to "アカウントを作成する", new_user_registration_path, class: "btn" %>
 <%= link_to "ログイン", new_user_session_path, class: "btn" %>
+
+<% if user_signed_in? %>
+  <%= link_to "サインアウト", destroy_user_session_path, method: :delete, class: "btn" %>
+<% end %>
