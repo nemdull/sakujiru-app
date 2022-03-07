@@ -1,5 +1,5 @@
-import 'bootstrap';
-import '../stylesheets/application';
+import "channels"
+import "stylesheets/application.css"
 
 // This file is automatically compiled by Webpack, along with any other files
 // present in this directory. You're encouraged to place your actual application logic in
