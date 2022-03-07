@@ -1,7 +1,19 @@
 <h2>Edit <%= resource_name.to_s.humanize %></h2>
 
-<%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { method: :put }) do |f| %>
+<%= form_with scope: resource, as: resource_name, url: registration_path(resource_name), class: "px-3", local: true, method: :patch do |f| %>
   <%= render "devise/shared/error_messages", resource: resource %>
+
+  <div class="profile">
+    <img id="profile-img-prev" src="#" class='hidden' />
+    <% if @user.profile_image.url.nil? %>
+      <div class="profile-default-img"></div>
+    <% else %>
+      <%= image_tag @user.profile_image.url, class: "profile-img", id: "profile-img" %>
+    <% end %>
+    <label class="profile-img-upload">
+      <%= f.file_field :profile_image, id: "profile_image_upload" %>ファイルを選択
+    </label>
+  </div>
 
   <div class="field">
     <%= f.label :name %><br />
