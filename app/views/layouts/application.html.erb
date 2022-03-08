@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html data-theme="cyberpunk">
+<html data-theme="aqua">
   <head>
     <title>Sakujiru</title>
     <%= csrf_meta_tags %>
@@ -12,7 +12,11 @@
   </head>
 
   <body>
-
+    <%# header %>
+    <header>
+      <%= render "partial/header" %>
+    </header>
+    <main>
     <% if flash[:notice] %>
       <div class="alert alert-info">
         <%= flash[:notice] %>
@@ -25,5 +29,10 @@
     <% end %>
 
     <%= yield %>
+    </main>
+    <%# footer %>
+    <footer>
+      <%= render "partial/footer" %>
+    </footer>
   </body>
 </html>
