@@ -4,7 +4,7 @@ Rails.application.routes.draw do
 
   root "top#index"
 
-  resources :posts, only: %i(new create) do
+  resources :posts, only: %i(new create index show destroy) do
     resources :arts, only: %i(create)
   end
 

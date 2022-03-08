@@ -1,15 +1,17 @@
-<div class="user-action-common">
-  <%= link_to edit_user_registration_path do %>
-
-    <div>link</div>
+<div class="container mx-auto">
+  <%# avatar %>
+  <% if @user.profile_image.url.nil? %>
+    <p>画像設定なし</p>
+  <% else %>
+    <%= image_tag @user.profile_image.url, class: "profile-img" %>
   <% end %>
-  <span>情報を編集<span>
+  <%# username %>
+  <div class="">
+    <%= @user.name %>
+  </div>
 
-<%= @user.name %>
-<%= @user.self_introduction %>
-
-<% if @user.profile_image.url.nil? %>
-  <div class="profile-default-img"></div>
-<% else %>
-  <%= image_tag @user.profile_image.url, class: "profile-img" %>
-<% end %>
+  <% if @user == current_user %>
+    <%# edit_link %>
+    <%= button_to "編集", edit_user_registration_path, method:"get", class: "btn btn-secondary" %>
+  <% end %>
+</div>
