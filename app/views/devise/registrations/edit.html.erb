@@ -8,7 +8,7 @@
     <% if @user.profile_image.url.nil? %>
       <p>画像設定なし</p>
     <% else %>
-      <%= image_tag @user.profile_image.url, class: "profile-img", id: "profile-img" %>
+      <%= image_tag @user.profile_image.url(:thumb), class: "profile-img", id: "profile-img" %>
     <% end %>
     <label class="profile-img-upload">
       <%= f.file_field :profile_image, id: "profile_image_upload" %>ファイルを選択
