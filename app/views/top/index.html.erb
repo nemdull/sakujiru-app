@@ -1,9 +1,9 @@
-<p>ここはtop</p>
-<%= link_to "ログイン", new_user_session_path, class: "btn my-2 my-sm-0 bg-light text-top-color" %>
-
-<%= link_to "アカウントを作成する", new_user_registration_path, class: "btn" %>
-<%= link_to "ログイン", new_user_session_path, class: "btn" %>
-
-<% if user_signed_in? %>
-  <%= link_to "サインアウト", destroy_user_session_path, method: :delete, class: "btn" %>
-<% end %>
+<div class="hero min-h-screen bg-base-200">
+  <div class="hero-content text-center">
+    <div class="max-w-md">
+      <h1 class="text-5xl font-bold">Sakujiruへようこそ</h1>
+      <p class="py-6">Sakujiruは作字に関わる人を応援するプラットフォームです</p>
+      <%= link_to "新規登録", new_user_registration_path, class: "btn btn-primary rounded-btn" %>
+    </div>
+  </div>
+</div>
