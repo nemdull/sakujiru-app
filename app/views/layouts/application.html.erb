@@ -11,12 +11,12 @@
     <%= javascript_pack_tag 'application', 'data-turbolinks-track': 'reload' %>
   </head>
 
-  <body>
+  <body class="flex flex-col min-h-screen">
     <%# header %>
-    <header>
+    <header class="flex-grow">
       <%= render "partial/header" %>
     </header>
-    <main>
+    <main class="flex-grow">
     <% if flash[:notice] %>
       <div class="alert alert-info">
         <%= flash[:notice] %>
