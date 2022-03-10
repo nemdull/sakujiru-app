@@ -35,6 +35,10 @@ class PostsController < ApplicationController
     @posts = Post.limit(10).includes(:arts, :user).order('created_at DESC')
   end
 
+  def swipe
+
+  end
+
 
   private
     def post_params
