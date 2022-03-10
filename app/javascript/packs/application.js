@@ -1,3 +1,4 @@
+import "hammerjs"
 import "channels"
 import "stylesheets/application.css"
 
