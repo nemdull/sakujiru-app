@@ -1,1 +1,25 @@
-swipe page dayo
+<div class="user-index-page">
+
+  <div class="swipe">
+    <div class="swipe--status">
+
+    </div>
+
+    <div class="swipe--cards stack">
+      <% @posts.each do |post| %>
+        <div class="swipe--card grid" id="<%= post.user_id %>">
+          <%= image_tag post.arts.first.image.url(:medium), class:"profile-img" %>
+          <p class="profile-name">
+            <%= post.art_text %>
+          </p>
+        </div>
+      <% end %>
+    </div>
+
+    <div class="swipe--buttons">
+      <button id="dislike">すこ</button>
+      <button id="like">すかない</button>
+    </div>
+  </div>
+
+</div>
