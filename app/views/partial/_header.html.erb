@@ -31,6 +31,8 @@
         <% if current_user %>
           <%# swipe %>
           <li><%= link_to "マッチング", swipe_path, class: "btn btn-ghost btn-sm rounded-btn" %></li>
+          <%# いいねした投稿　%>
+          <li><%= link_to "いいね一覧", matching_index_path, class: "btn btn-ghost btn-sm rounded-btn"%></li>
           <%# 作字一覧 %>
           <li><%= link_to "作字一覧", posts_path, class: "btn btn-ghost btn-sm rounded-btn"%></li>
           <%# 新規投稿 %>
