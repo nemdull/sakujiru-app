@@ -36,7 +36,6 @@ class PostsController < ApplicationController
   end
 
   def swipe
-    # user_idがログインユーザー以外の物を表示
     @posts = Post.where.not(user_id: current_user.id)
     @user = User.find(current_user.id)
   end
