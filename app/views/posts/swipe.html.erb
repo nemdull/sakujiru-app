@@ -9,9 +9,6 @@
       <% @posts.each do |post| %>
         <div class="swipe--card grid" id="<%= post.id %>">
           <%= image_tag post.arts.first.image.url(:medium), class:"profile-img" %>
-          <p class="profile-name">
-            <%= post.art_text %>
-          </p>
         </div>
       <% end %>
     </div>
