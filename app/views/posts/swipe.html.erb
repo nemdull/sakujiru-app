@@ -1,21 +1,26 @@
 <div class="user-index-page">
 
-  <div class="swipe">
+  <div class="swipe flex justify-center flex-col">
     <div class="swipe--status">
-
     </div>
 
-    <div class="swipe--cards stack">
+    <%# 重ね合わせたカード %>
+    <div class="swipe--cards stack mt-5 mb-5">
       <% @posts.each do |post| %>
-        <div class="swipe--card grid" id="<%= post.id %>">
+        <div class="swipe--card grid card w-96 bg-base-100 shadow-xl" id="<%= post.id %>">
           <%= image_tag post.arts.first.image.url(:medium), class:"profile-img" %>
+          <%# 投稿情報 %>
+          <div class="card-body">
+            <%# 作品詳細 %>
+            <%= post.art_text %>
+          </div>
         </div>
       <% end %>
     </div>
 
-    <div class="swipe--buttons">
-      <button id="dislike" class="btn">dislike</button>
-      <button id="like" class="btn">like</button>
+    <div class="swipe--buttons mx-auto mb-5">
+      <button id="dislike" class="btn btn-secondary">dislike</button>
+      <button id="like" class="btn btn-primary">like</button>
     </div>
   </div>
 
