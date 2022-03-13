@@ -11,6 +11,8 @@
         <%# 作品詳細 %>
         <%= post.art_text %>
         <div class="justify-end card-actions">
+          <%# Direct Message %>
+          <%= button_to "DM", chat_rooms_path(params: { user_id: post.user_id }), method: :post, class: "btn btn-secondary"  %>
 
         </div>
 
