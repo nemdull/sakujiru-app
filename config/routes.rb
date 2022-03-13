@@ -13,5 +13,7 @@ Rails.application.routes.draw do
   resources :reactions, only: [:create]
   resources :matching, only: [:index]
 
+  resources :chat_rooms, only: [:create, :show]
+
   get "/swipe", to: "posts#swipe"
 end
