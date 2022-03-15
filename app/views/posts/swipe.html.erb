@@ -22,7 +22,7 @@
               <% if post_user.profile_image.url.nil? %>
                 <label tabindex="0" class="btn btn-ghost btn-circle avatar">
                   <div class="w-10 rounded-full">
-                    <p>画像設定なし</p>
+                    <%= user_avatar(post_user.name) %>
                   </div>
                 </label>
               <% else %>
