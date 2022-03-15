@@ -1,5 +1,6 @@
 class ChatRoomsController < ApplicationController
   before_action :authenticate_user!
+  before_action :set_current_user
 
   def create
     current_user_chat_rooms = ChatRoomUser.where(user_id: current_user.id).map(&:chat_room)

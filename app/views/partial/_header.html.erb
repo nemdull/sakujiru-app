@@ -12,7 +12,7 @@
     </div>
     <%# ドロップダウン %>
     <div class="dropdown dropdown-end">
-      <% if current_user %>
+      <% if @set_current_user %>
         <%# avatar %>
         <% if @set_current_user.profile_image.url.nil? %>
           <label tabindex="0" class="btn btn-ghost btn-circle avatar">

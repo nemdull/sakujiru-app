@@ -1,5 +1,6 @@
 class MatchingController < ApplicationController
   before_action :authenticate_user!
+  before_action :set_current_user
 
   def index
     # 自分がいいねした投稿のidを抜く
