@@ -7,6 +7,9 @@ Rails.application.routes.draw do
   resources :posts, only: %i(new create index show destroy) do
     resources :arts, only: %i(create)
     resources :comments, only: %i(create destroy)
+    collection do
+      get 'search'
+    end
   end
 
   resources :users, only:[:show,:index]

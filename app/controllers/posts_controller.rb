@@ -1,6 +1,7 @@
 class PostsController < ApplicationController
   before_action :authenticate_user!
   before_action :set_current_user
+  before_action :set_q, only: [:index, :search]
 
   def new
     @post = Post.new
@@ -44,10 +45,17 @@ class PostsController < ApplicationController
     @user = User.find(current_user.id)
   end
 
+  def search
+    @results = @q.result
+  end
 
   private
     def post_params
       params.require(:post).permit(:art_text, arts_attributes: [:image]).merge(user_id: current_user.id)
+    end
+
+    def set_q
+      @q = Post.ransack(params[:q])
     end
 end
 
