@@ -1,3 +1,12 @@
+<%#　検索窓 %>
+<div class="flex justify-center mb-5">
+  <div class="form-control">
+    <%= search_form_for @q, url: search_posts_path do |f| %>
+      <%= f.search_field :art_text_cont, class: "input input-bordered", placeholder: "Search", type: "text" %>
+      <%= f.submit '検索', class: "btn" %>
+    <% end %>
+  </div>
+</div>
 <div class="grid grid-cols-1 md:grid-cols-3">
   <% @posts.each do |post| %>
     <%# 投稿表示 %>
