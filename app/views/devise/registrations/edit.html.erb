@@ -1,67 +1,73 @@
-<h2>Edit <%= resource_name.to_s.humanize %></h2>
+<div class="flex justify-center mb-5">
+  <div class="w-2/3">
+    <div class="text-center font-bold">
+      <h2>ユーザー編集 <%= resource_name.to_s.humanize %></h2>
+    </div>
 
-<%= form_with scope: resource, as: resource_name, url: registration_path(resource_name), class: "px-3",method: "patch", local: true do |f| %>
-  <%= render "devise/shared/error_messages", resource: resource %>
-  <%# avatar %>
-  <div class="profile">
-    <img id="profile-img-prev" src="#" class='hidden' />
-    <% if @user.profile_image.url.nil? %>
-      <p>画像設定なし</p>
-    <% else %>
-      <%= image_tag @user.profile_image.url(:thumb), class: "profile-img", id: "profile-img" %>
+    <%= form_with scope: resource, as: resource_name, url: registration_path(resource_name), class: "px-3",method: "patch", local: true do |f| %>
+      <%= render "devise/shared/error_messages", resource: resource %>
+      <%# avatar %>
+      <div class="profile">
+        <img id="profile-img-prev" src="#" class='hidden' />
+        <% if @user.profile_image.url.nil? %>
+          <p>画像設定なし</p>
+        <% else %>
+          <%= image_tag @user.profile_image.url(:thumb), class: "profile-img", id: "profile-img" %>
+        <% end %>
+        <label class="profile-img-upload">
+          <%= f.file_field :profile_image, id: "profile_image_upload" %>ファイルを選択
+        </label>
+      </div>
+
+      <%# name %>
+      <div class="form-control">
+        <label class="label">
+          <%= f.label :名前, class: "label-text" %>
+        </label>
+        <%= f.text_field :name, autofocus: true, autocomplete: "name", class: "input input-bordered" %>
+      </div>
+
+      <%# email %>
+      <div class="form-control">
+        <label class="label">
+          <%= f.label :メールアドレス, class: "label-text" %>
+        </label>
+        <%= f.email_field :email, autofocus: true, autocomplete: "email", class: "input input-bordered" %>
+      </div>
+
+      <%# introduction %>
+      <div class="form-control">
+        <label class="自己紹介">
+          <%= f.label :自己紹介, class: "label-text" %>
+        </label>
+        <%= f.text_area :self_introduction, class: "form-control", placeholder: "紹介", rows: "4" %>
+      </div>
+
+      <%# password %>
+      <div class="form-control">
+        <label class="label">
+          <%= f.label :パスワード, class: "label-text" %>
+        </label>
+        <%= f.password_field :password, autocomplete: "new-password", class: "input input-bordered" %>
+      </div>
+
+      <%# password_confirmation %>
+      <div class="form-control">
+        <label class="label">
+          <%= f.label :パスワードを確認, class: "label-text" %>
+        </label>
+        <%= f.password_field :password, autocomplete: "new-password", class: "input input-bordered" %>
+      </div>
+
+      <%# 更新 %>
+      <div class="actions form-control mt-6">
+        <%= f.submit "更新する", class: "btn btn-primary" %>
+      </div>
+
+
+      <div class="actions form-control mt-6">
+        <%= button_to "退会する", registration_path(resource_name), data: { confirm: "Are you sure?" }, method: :delete, class: "btn" %>
+      </div>
     <% end %>
-    <label class="profile-img-upload">
-      <%= f.file_field :profile_image, id: "profile_image_upload" %>ファイルを選択
-    </label>
   </div>
-
-  <%# name %>
-  <div class="form-control">
-    <label class="label">
-      <%= f.label :名前, class: "label-text" %>
-    </label>
-    <%= f.text_field :name, autofocus: true, autocomplete: "name", class: "input input-bordered" %>
-  </div>
-
-  <%# email %>
-  <div class="form-control">
-    <label class="label">
-      <%= f.label :メールアドレス, class: "label-text" %>
-    </label>
-    <%= f.email_field :email, autofocus: true, autocomplete: "email", class: "input input-bordered" %>
-  </div>
-
-  <%# introduction %>
-  <div class="form-control">
-    <label class="自己紹介">
-      <%= f.label :自己紹介, class: "label-text" %>
-    </label>
-    <%= f.text_area :self_introduction, class: "form-control", placeholder: "紹介", rows: "4" %>
-  </div>
-
-  <%# password %>
-  <div class="form-control">
-    <label class="label">
-      <%= f.label :パスワード, class: "label-text" %>
-    </label>
-    <%= f.password_field :password, autocomplete: "new-password", class: "input input-bordered" %>
-  </div>
-
-  <%# password_confirmation %>
-  <div class="form-control">
-    <label class="label">
-      <%= f.label :パスワードを確認, class: "label-text" %>
-    </label>
-    <%= f.password_field :password, autocomplete: "new-password", class: "input input-bordered" %>
-  </div>
-
-  <%# 更新 %>
-  <div class="actions form-control mt-6">
-    <%= f.submit "更新する", class: "btn btn-primary" %>
-  </div>
-
-
-  <div class="actions form-control mt-6">
-    <%= button_to "退会する", registration_path(resource_name), data: { confirm: "Are you sure?" }, method: :delete, class: "btn" %>
-  </div>
-<% end %>
+</div>
