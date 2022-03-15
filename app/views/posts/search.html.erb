@@ -1,0 +1,38 @@
+<h1 class="text-center font-bold">検索結果</h1>
+<div class="grid grid-cols-1 md:grid-cols-3">
+  <% @results.each do |post| %>
+    <%# 投稿表示 %>
+    <div class="card w-96 bg-base-100 shadow-xl">
+      <%# 投稿画像 %>
+      <%= link_to(post_path(post)) do %>
+        <%= image_tag post.arts.first.image.url(:medium) %>
+      <% end %>
+      <%# 投稿情報 %>
+      <div class="card-body">
+        <%# 作品詳細 %>
+        <%= post.art_text %>
+        <div class="justify-end card-actions">
+          <%# user詳細　%>
+          <% post_user = User.find_by(id: post.user_id) %>
+          <%# user name %>
+          <%= post_user.name%>
+          <%# user avatar %>
+          <% if post_user.profile_image.url.nil? %>
+            <label tabindex="0" class="btn btn-ghost btn-circle avatar">
+              <div class="w-10 rounded-full">
+                <%= user_avatar(post_user.name) %>
+              </div>
+            </label>
+          <% else %>
+            <label tabindex="0" class="btn btn-ghost btn-circle avatar">
+              <div class="w-10 rounded-full">
+                <%= image_tag post_user.profile_image.url, class: "profile-img" %>
+              </div>
+            </label>
+          <% end %>
+        </div>
+
+      </div>
+    </div>
+  <% end %>
+</div>
