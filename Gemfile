@@ -40,8 +40,8 @@ gem "mini_magick"
 # initial_avatar
 gem 'initials'
 
-# will_pagenate
-gem "will_paginate"
+# kaminari
+gem "kaminari"
 
 
 group :development, :test do
