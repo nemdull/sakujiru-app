@@ -1,27 +1,44 @@
 <div class="hero min-h-screen bg-base-200">
   <div class="hero-content flex-col lg:flex-row">
-    <img src="https://api.lorem.space/image/movie?w=260&h=400" class="max-w-sm rounded-lg shadow-2xl" />
+    <%# avatar %>
+    <% if @user.profile_image.url.nil? %>
+      <p>画像設定なし</p>
+    <% else %>
+      <%= image_tag @user.profile_image.url, class: "profile-img" %>
+    <% end %>
     <div>
-      <h1 class="text-5xl font-bold">Box Office News!</h1>
-      <p class="py-6">Provident cupiditate voluptatem et in. Quaerat fugiat ut assumenda excepturi exercitationem quasi. In deleniti eaque aut repudiandae et a id nisi.</p>
-      <button class="btn btn-primary">Get Started</button>
+      <%# username %>
+      <div class="text-5xl font-bold">
+        <%= @user.name %>
+      </div>
+      <p class="py-6">
+        <%= @user.self_introduction %>
+      </p>
+      <% if @user == current_user %>
+        <%# edit_link %>
+        <%= button_to "編集", edit_user_registration_path, method:"get", class: "btn btn-secondary" %>
+      <% end %>
     </div>
   </div>
 </div>
-<div class="container mx-auto">
-  <%# avatar %>
-  <% if @user.profile_image.url.nil? %>
-    <p>画像設定なし</p>
-  <% else %>
-    <%= image_tag @user.profile_image.url, class: "profile-img" %>
-  <% end %>
-  <%# username %>
-  <div class="">
-    <%= @user.name %>
-  </div>
+<h1 class="font-bold text-center text-3xl">作字一覧</h1>
+<div class="grid grid-cols-1 md:grid-cols-3 mt-5">
+  <% @posts.each do |post| %>
+    <%# 投稿表示 %>
+    <div class="card w-96 bg-base-100 shadow-xl">
+      <%# 投稿画像 %>
+      <%= link_to(post_path(post)) do %>
+        <%= image_tag post.arts.first.image.url(:medium) %>
+      <% end %>
+      <%# 投稿情報 %>
+      <div class="card-body">
+        <%# 作品詳細 %>
+        <%= post.art_text %>
+        <div class="justify-end card-actions">
 
-  <% if @user == current_user %>
-    <%# edit_link %>
-    <%= button_to "編集", edit_user_registration_path, method:"get", class: "btn btn-secondary" %>
+        </div>
+
+      </div>
+    </div>
   <% end %>
 </div>
