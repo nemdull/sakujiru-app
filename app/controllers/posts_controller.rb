@@ -12,10 +12,10 @@ class PostsController < ApplicationController
     @post = Post.new(post_params)
     if @post.arts.present?
       @post.save
-      redirect_to root_path
+      redirect_to posts_path
       flash[:notice] = "投稿が保存されました"
     else
-      redirect_to root_path
+      redirect_to posts_path
       flash[:alert] = "投稿に失敗しました"
     end
   end
@@ -27,7 +27,7 @@ class PostsController < ApplicationController
     else
       flash[:alert] = "投稿の削除に失敗しました"
     end
-    redirect_to root_path
+    redirect_to posts_path
   end
 
   def show

@@ -1,8 +1,28 @@
 <%= form_with model: @post do |f| %>
-  作品を投稿する
-  <%= f.text_field :art_text %>
-  <%= f.fields_for :arts do |i| %>
-    <%= i.file_field :image %>
-  <% end %>
-  <%= f.submit "投稿", class: "btn btn-primary" %>
+  <div class="flex justify-center">
+    <div class="card flex-shrink-0 w-1/2 shadow-2xl bg-base-100 justify-center">
+    
+      <%# カード中身　%>
+      <div class="card-body">
+        <div class="text-center font-bold mb-5">
+          作品を投稿する
+        </div>
+
+        <div class="form-control">
+          <%= f.text_field :art_text %>
+        </div>
+
+        <div class="form-control">
+          <%= f.fields_for :arts do |i| %>
+            <%= i.file_field :image %>
+          <% end %>
+        </div>
+
+        <div class="form-control">
+          <%= f.submit "投稿", class: "btn btn-primary" %>
+        </div>
+      <div>
+
+    </div>
+  </div>
 <% end %>
