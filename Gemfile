@@ -37,11 +37,14 @@ gem 'carrierwave', '~> 2.0'
 # mini_magick
 gem "mini_magick"
 
-# initial_avatar
+# initial_avatar(initial_avatar)
 gem 'initials'
 
-# kaminari
+# kaminari(pagenate)
 gem "kaminari"
+
+# ransack(search)
+gem "ransack"
 
 
 group :development, :test do
