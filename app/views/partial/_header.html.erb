@@ -13,11 +13,20 @@
     <%# ドロップダウン %>
     <div class="dropdown dropdown-end">
       <% if current_user %>
-        <label tabindex="0" class="btn btn-ghost btn-circle avatar">
-          <div class="w-10 rounded-full">
-            <img src="https://api.lorem.space/image/face?hash=33791">
-          </div>
-        </label>
+        <%# avatar %>
+        <% if @set_current_user.profile_image.url.nil? %>
+          <label tabindex="0" class="btn btn-ghost btn-circle avatar">
+            <div class="w-10 rounded-full">
+              <p>画像設定なし</p>
+            </div>
+          </label>
+        <% else %>
+          <label tabindex="0" class="btn btn-ghost btn-circle avatar">
+            <div class="w-10 rounded-full">
+              <%= image_tag @set_currrent_user.profile_image.url, class: "profile-img" %>
+            </div>
+          </label>
+        <% end %>
       <% else %>
         <label tabindex="0" class="btn btn-ghost btn-circle avatar">
           <div class="w-10 rounded-full">
