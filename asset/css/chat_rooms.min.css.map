@@ -1,0 +1,9 @@
+{
+    "version": 3,
+    "mappings": "",
+    "sources": [
+        "../../app/assets/stylesheets/chat_rooms.scss"
+    ],
+    "names": [],
+    "file": "chat_rooms.min.css"
+}
