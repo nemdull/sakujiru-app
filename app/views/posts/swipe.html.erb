@@ -13,6 +13,26 @@
           <div class="card-body">
             <%# 作品詳細 %>
             <%= post.art_text %>
+            <div class="justify-end card-actions">
+              <%# user詳細　%>
+              <% post_user = User.find_by(id: post.user_id) %>
+              <%# user name %>
+              <%= post_user.name%>
+              <%# user avatar %>
+              <% if post_user.profile_image.url.nil? %>
+                <label tabindex="0" class="btn btn-ghost btn-circle avatar">
+                  <div class="w-10 rounded-full">
+                    <p>画像設定なし</p>
+                  </div>
+                </label>
+              <% else %>
+                <label tabindex="0" class="btn btn-ghost btn-circle avatar">
+                  <div class="w-10 rounded-full">
+                    <%= image_tag post_user.profile_image.url, class: "profile-img" %>
+                  </div>
+                </label>
+              <% end %>
+            </div>
           </div>
         </div>
       <% end %>
