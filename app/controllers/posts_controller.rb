@@ -32,7 +32,7 @@ class PostsController < ApplicationController
   end
 
   def index
-    @posts = Post.limit(10).includes(:arts, :user).order('created_at DESC')
+    @posts = Post.kaminari_page(params[:page]).per(9).includes(:arts, :user).order('created_at DESC')
   end
 
   def swipe
