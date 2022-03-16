@@ -1,0 +1,30 @@
+<% provide(:button_text, '登録する') %>
+
+<!-- ローカルのstripe.jsの読み込み -->
+<%# javascript_include_tag 'stripe.js' %>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-4 offset-md-4">
+    <h2 class="card_header">カード情報の登録</h2>
+      <div class="card">
+        <!-- cards_controllerのcreateアクションにformを送信 -->
+        <%= form_with url: post_cards_path(id: params[:id]), method: :post, id: "payment-form", local: true do |f| %>
+          <div class="card-element card-number">カード番号</div>
+          <!-- カード番号入力スペース用の要素が中にアタッチされるdiv -->
+          <div class="stripe-input" id="card-number"></div>
+          <div class="card-element">有効期限</div>
+          <!-- 有効期限入力スペース用の要素が中にアタッチされるdiv -->
+          <div class="stripe-input" id="card-expiry"></div>
+          <div class="card-element">CVC</div>
+          <!-- cvc入力スペース用の要素が中にアタッチされるdiv -->
+          <div class="stripe-input" id="card-cvc"></div>
+          <div class="form-row">
+            <div id="card-errors" role="alert"></div>
+          </div>
+          <%= f.submit yield(:button_text), class: 'btn btn-primary', id: 'info_submit' %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
