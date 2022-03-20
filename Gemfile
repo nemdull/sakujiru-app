@@ -46,6 +46,8 @@ gem "kaminari"
 # ransack(search)
 gem "ransack"
 
+# payjp(payment)
+gem "payjp"
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
