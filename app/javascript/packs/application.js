@@ -13,6 +13,7 @@ require("@rails/activestorage").start()
 require("channels")
 require("src/profile_image_upload");
 require("src/swipe")
+require("src/payjp")
 
 
 // Uncomment to copy all static images under ../images to the output folder and reference
