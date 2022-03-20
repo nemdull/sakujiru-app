@@ -12,6 +12,14 @@ Rails.application.routes.draw do
     end
   end
 
+  resources :cards, only: [:new, :show] do
+    collection do
+      post 'show', to: 'cards#show'
+      post 'pay', to: 'cards#pay'
+      post 'delete', to: 'cards#delete'
+    end
+   end
+
   resources :users, only:[:show,:index]
   resources :reactions, only: [:create]
   resources :matching, only: [:index]

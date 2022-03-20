@@ -8,6 +8,8 @@ class User < ApplicationRecord
   has_many :chat_rooms, through: :chat_room_users
   has_many :chat_messages, dependent: :destroy
 
+  has_one :card
+
 
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable

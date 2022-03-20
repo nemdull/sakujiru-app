@@ -1,0 +1,8 @@
+<div id="number-form" class="payjs-outer"><!-- ここにカード番号入力フォームが生成されます --></div>
+<div id="expiry-form" class="payjs-outer"><!-- ここに有効期限入力フォームが生成されます --></div>
+<div id="cvc-form" class="payjs-outer"><!-- ここにCVC入力フォームが生成されます --></div>
+
+<%= form_with url: pay_cards_path, method: :post, id: "card_form" do |f| %>
+  <div id="card_token"></div>
+  <%= f.submit "登録する", class:"btn", id: "info_submit" %>
+<% end %>
