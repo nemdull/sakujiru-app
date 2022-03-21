@@ -3,7 +3,7 @@ $(function () {
   if (document.URL.match(/cards/)){
 
     //公開鍵を記述
-    var payjp = Payjp('pk_test_xxxxxxxxxxxxxxxxxxxxxxxx');
+    var payjp = Payjp('pk_test_710ba4c4b0fc4a97350e86f1');
     //Elements インスタンスを生成します。
     var elements = payjp.elements();
     var numberElement = elements.create('cardNumber');
