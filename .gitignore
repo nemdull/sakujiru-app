@@ -39,3 +39,5 @@ public/uploads/
 db/dummy_images
 db/moji
 db/seeds.rb
+
+.env
