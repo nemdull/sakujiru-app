@@ -8,7 +8,7 @@ class User < ApplicationRecord
   has_many :chat_rooms, through: :chat_room_users
   has_many :chat_messages, dependent: :destroy
 
-  has_one :card
+  has_one :card, dependent: :destroy
 
 
   # Include default devise modules. Others available are:
