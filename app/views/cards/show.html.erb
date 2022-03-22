@@ -1,36 +1,25 @@
-<%= "**** **** **** " + @default_card_information.last4 %>
-<br />
-<% exp_month = @default_card_information.exp_month.to_s %>
-<% exp_year = @default_card_information.exp_year.to_s.slice(2,3) %>
-<%= exp_month + " / " + exp_year %>
+<div class="flex justify-center">
+  <div class="card flex-shrink-0 w-full max-w-sm shadow-2xl bg-base-100">
+    <div class="card-body">
 
-<%= form_with url:delete_cards_path, method: :post, id: 'charge-form', name: "inputForm", local: true do %>
-  <input type="hidden" name="card_id" value="">
-  <button>削除する</button>
-<% end %>
+      <%# カード番号 %>
+      <div>
+        カード番号
+        <%= "**** **** **** " + @default_card_information.last4 %>
+      </div>
 
-<div class="card flex-shrink-0 w-full max-w-sm shadow-2xl bg-base-100">
-  <div class="card-body">
+      <%# 有効期限 %>
+      <div>
+        有効期限
+        <% exp_month = @default_card_information.exp_month.to_s %>
+        <% exp_year = @default_card_information.exp_year.to_s.slice(2,3) %>
+        <%= exp_month + " / " + exp_year %>
+      </div>
 
-    <%# カード番号 %>
-    <div class="form-control">
-      <div id="number-form" class="payjs-outer input input-bordered"><!-- ここにカード番号入力フォームが生成されます --></div>
-    </div>
-
-    <%# 有効期限 %>
-    <div class="form-control">
-      <div id="expiry-form" class="payjs-outer input input-bordered"><!-- ここに有効期限入力フォームが生成されます --></div>
-    </div>
-
-    <%# CVC %>
-    <div class="form-control">
-      <div id="cvc-form" class="payjs-outer input input-bordered"><!-- ここにCVC入力フォームが生成されます --></div>
-    </div>
-
-    <%# 登録ボタン %>
-    <%= form_with url: pay_cards_path, method: :post, id: "card_form" do |f| %>
-      <div id="card_token"></div>
-      <%= f.submit "登録する", class:"btn", id: "info_submit" %>
-    <% end %>
+      <%# 登録ボタン %>
+      <%= form_with url:delete_cards_path, method: :post, id: 'charge-form', name: "inputForm", local: true do %>
+        <input type="hidden" name="card_id" value="">
+        <button class="btn btn-primary">削除する</button>
+      <% end %>
   </div>
 </div>

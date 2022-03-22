@@ -46,6 +46,8 @@
           <li><%= link_to "クリエイター一覧", users_path, class: "btn btn-ghost btn-sm rounded-btn" %></li>
           <%# マイページ %>
           <li><%= link_to "マイページ", user_path(current_user), class: "btn btn-ghost btn-sm rounded-btn" %></li>
+          <%# クレジットカード登録　%>
+          <li><%= link_to "クレジットカード", card_path(current_user), class: "btn btn-ghost btn-sm rounded-btn" %></li>
           <%# Log out %>
           <li><%= link_to "サインアウト", destroy_user_session_path, method: :delete, class: "btn btn-ghost btn-sm rounded-btn" %></li>
         <%# ログイン前 %>

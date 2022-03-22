@@ -13,7 +13,7 @@
   </head>
 
   <body class="flex flex-col min-h-screen">
-    <% unless current_page?(root_path) %> <%# unlessで現在のページがrootなら呼び出さない
+    <% unless current_page?(root_path) || current_page?("/users/sign_in") || current_page?("/users/sign_up") %>
     <%# header %>
     <header class="flex-grow">
       <%= render "partial/header" %>
