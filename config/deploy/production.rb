@@ -7,6 +7,13 @@
 # server "example.com", user: "deploy", roles: %w{app web}, other_property: :other_value
 # server "db.example.com", user: "deploy", roles: %w{db}
 
+server 35.73.107.250, user: nemdull, roles: %w{app db web}
+
+set :ssh_options, {
+  keys: %w(~/.ssh/sakujiru.pem),
+  forward_agent: true,
+  auth_methods: %w(publickey),
+}
 
 
 # role-based syntax
