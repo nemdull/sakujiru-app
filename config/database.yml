@@ -84,5 +84,6 @@ test:
 production:
   <<: *default
   database: sakujiru_production
-  username: sakujiru
-  password: <%= ENV['SAKUJIRU_DATABASE_PASSWORD'] %>
+  username: postgresql
+  password: <%= Rails.application.credentials.db[:password] %>
+  host: <%= Rails.application.credentials.db[:hostname] %>
