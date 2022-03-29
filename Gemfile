@@ -52,6 +52,13 @@ gem "payjp"
 # dotenv
 gem 'dotenv-rails'
 
+# capistrano
+gem "capistrano", "~> 3.10", require: false
+gem "capistrano-rails", "~> 1.6", require: false
+gem 'capistrano-rbenv', '~> 2.2'
+gem 'capistrano-rbenv-vars', '~> 0.1'
+gem 'capistrano3-puma'
+
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
@@ -68,12 +75,6 @@ group :development do
   gem "rails-erd"
   # pry-rails
   gem 'pry-rails'
-
-  gem "capistrano", "~> 3.10", require: false
-  gem "capistrano-rails", "~> 1.6", require: false
-  gem 'capistrano-rbenv', '~> 2.2'
-  gem 'capistrano-rbenv-vars', '~> 0.1'
-  gem 'capistrano3-puma'
 end
 
 group :test do
