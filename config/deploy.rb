@@ -2,7 +2,7 @@
 lock "~> 3.17.0"
 
 set :application, "sakujiru"
-set :repo_url, "https://github.com/dlanx0607/sakujiru-app"
+set :repo_url, "git@github.com:dlanx0607/sakujiru-app.git"
 set :rbenv_ruby, File.read('.ruby-version').strip
 set :branch, ENV['BRANCH'] || "main"
 
