@@ -1,4 +1,5 @@
-CarrierWave.configure do |config|
+if Rails.env.production?
+  CarrierWave.configure do |config|
     config.fog_credentials = {
       provider: "AWS",
       aws_access_key_id: Rails.application.credentials.dig(:aws, :access_key_id),
@@ -7,3 +8,4 @@ CarrierWave.configure do |config|
     }
     config.fog_directory = "sakujiru"
   end
+end
