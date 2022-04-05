@@ -1,15 +1,19 @@
 <div class="justify-center">
-  <div>チャットルーム</div>
-  <%= @chat_room_user.name %>
+  <div class="card flex-shrink-0 w-full max-w-sm shadow-2xl bg-base-100">
+    <div class="card-body">
+      <div>チャットルーム</div>
+      <%= @chat_room_user.name %>
 
-  <div id='chat-messages'>
-    <%= render @chat_messages %>
+      <div id='chat-messages'>
+        <%= render @chat_messages %>
+      </div>
+
+      <form class="form-control">
+        <label class="input-group input-group-md">
+          <span>DM</span>
+          <textarea data-behavior="chat_room_speaker" data-chat_room_id="<%= @chat_room.id %>" placeholder="メッセージを入力する" class="chat-room__message-form_textarea input input-bordered w-full max-w-xs"></textarea>
+        </label>
+      </form>
+    </div>
   </div>
-
-  <form class="form-control">
-    <label class="input-group input-group-md">
-      <span>DM</span>
-      <textarea data-behavior="chat_room_speaker" data-chat_room_id="<%= @chat_room.id %>" placeholder="メッセージを入力する" class="chat-room__message-form_textarea input input-bordered w-full max-w-xs"></textarea>
-    </label>
-  </form>
 </div>
