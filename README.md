@@ -1,24 +1,28 @@
 # README
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+このREADMEは、アプリケーションを起動するために必要な手順を文書化しています。
 
-Things you may want to cover:
+## リポジトリの構成
 
-* Ruby version
+- **app/**: アプリケーションの主要なコードが含まれています。コントローラー、モデル、ビューがそれぞれのサブディレクトリに分かれています。
+- **config/**: アプリケーションの設定ファイルが含まれています。ルーティングやデータベースの設定などがここにあります。
+- **db/**: データベースのマイグレーションやスキーマが含まれています。
+- **public/**: 公開される静的ファイル（例: HTML、画像）が含まれています。
 
-* System dependencies
+## 必要な手順
 
-* Configuration
+1. **Rubyのインストール**: Ruby 2.7.5を使用する必要があります。
+2. **Bundlerのインストール**: `gem install bundler`を実行してBundlerをインストールします。
+3. **依存関係のインストール**: `bundle install`を実行して必要なGemをインストールします。
+4. **データベースの作成**: `rails db:create`を実行してデータベースを作成します。
+5. **データベースの初期化**: `rails db:migrate`を実行してデータベースを初期化します。
+6. **アプリケーションの起動**: `bin/rails server`を実行してアプリケーションを起動します。
 
-* Database creation
+## 注意事項
 
-* Database initialization
+- Rubyのバージョンは2.7.5を指定してください。
+- Bundlerのバージョンは2.2.33を使用してください。
 
-* How to run the test suite
+## その他
 
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+- テストスイートの実行方法やデプロイ手順については、必要に応じて追加してください。
