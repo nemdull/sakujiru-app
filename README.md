@@ -24,11 +24,26 @@
 - Bundlerのバージョンは2.2.33を使用してください。
 
 ## 使用するRubyのバージョン
-- Ruby 3.4.5を使用します。
+- Ruby 2.7.5を使用します。
 
 ## 使用するBundlerのバージョン
-- Bundler 2.7.2を使用します。
+- Bundler 2.2.33を使用します。
 
 ## その他
 
 - テストスイートの実行方法やデプロイ手順については、必要に応じて追加してください。
+
+## テストの実行方法
+- ローカル実行
+  - bin/rails test
+  - bundle exec rake test
+- 環境別実行
+  - RAILS_ENV=test bin/rails test
+
+## デプロイ手順
+- アセットのプリコンパイル
+  - RAILS_ENV=production bundle exec rake assets:precompile
+- データベース移行
+  - RAILS_ENV=production bin/rails db:migrate
+- 本番サーバの再起動
+  - 環境依存の手順に従って再起動
