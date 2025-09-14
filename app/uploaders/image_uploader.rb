@@ -3,9 +3,15 @@ class ImageUploader < CarrierWave::Uploader::Base
   # include CarrierWave::RMagick
   include CarrierWave::MiniMagick
 
-  # Choose what kind of storage to use for this uploader:
+  # Choose storage: use S3 (fog) only when credentials are present.
   if Rails.env.production?
-    storage :fog
+    if (ENV["AWS_ACCESS_KEY_ID"].present? && ENV["AWS_SECRET_ACCESS_KEY"].present?) ||
+       (Rails.application.credentials.dig(:aws, :access_key_id).present? &&
+        Rails.application.credentials.dig(:aws, :secret_access_key).present?)
+      storage :fog
+    else
+      storage :file
+    end
   else
     storage :file
   end
