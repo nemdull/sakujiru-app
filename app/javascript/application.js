@@ -7,12 +7,12 @@ RailsUJS.start()
 
 import * as ActiveStorage from "@rails/activestorage"
 ActiveStorage.start()
-import "channels"
+import "./channels"
 
 // App-specific scripts
-import "src/profile_image_upload"
-import "src/swipe"
-import "src/payjp"
+import "./src/profile_image_upload"
+import "./src/swipe"
+import "./src/payjp"
 
 // If you need Hammer.js globally
 import "hammerjs"
