@@ -23,9 +23,9 @@ Rails.application.configure do
   config.public_file_server.enabled = true
   config.server_static_files = true
 
-
-  # Compress CSS using a preprocessor.
-  config.assets.css_compressor = :sass
+  # CSS is built by cssbundling (Dart Sass) into app/assets/builds.
+  # Do not use Sprockets' :sass compressor to avoid libsass/sassc dependency.
+  # config.assets.css_compressor = :sass
 
   # Do not fallback to assets pipeline if a precompiled asset is missed.
   config.assets.compile = true

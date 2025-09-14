@@ -1,22 +1,24 @@
 source 'https://rubygems.org'
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
-ruby '2.7.5'
+ruby '3.3.0'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'rails', '~> 6.0.6', '>= 6.0.6.1'
+gem 'rails', '~> 7.2.0'
 # Use postgresql as the database for Active Record
-gem 'pg', '>= 0.18', '< 2.0'
-# Use Puma as the app server
-gem 'puma', '~> 4.1'
-# Use SCSS for stylesheets
-gem 'sass-rails', '>= 6'
-# Transpile app-like JavaScript. Read more: https://github.com/rails/webpacker
-gem 'webpacker', '~> 5.0'
-# Turbolinks makes navigating your web application faster. Read more: https://github.com/turbolinks/turbolinks
-gem 'turbolinks', '~> 5'
+# Database adapter (allow pg 1.x/2.x for Ruby 3.3 compatibility)
+gem 'pg', '>= 1.4'
+# Use Puma as the app server (Rails 7 compatible)
+gem 'puma', '~> 6.4'
+# Stylesheets are built via cssbundling (Dart Sass)
+# JavaScript bundling for Rails 7 (use esbuild by default)
+gem 'jsbundling-rails'
+# Hotwire Turbo (Rails 7 default navigation)
+gem 'turbo-rails'
 # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
-gem 'jbuilder', '~> 2.7'
+gem 'jbuilder', '~> 2.12'
+# Asset Pipeline (Sprockets) for Rails 7
+gem 'sprockets-rails'
 # Use Redis adapter to run Action Cable in production
 # gem 'redis', '~> 4.0'
 # Use Active Model has_secure_password
@@ -26,7 +28,7 @@ gem 'jbuilder', '~> 2.7'
 # gem 'image_processing', '~> 1.2'
 
 # Reduces boot times through caching; required in config/boot.rb
-gem 'bootsnap', '>= 1.4.2', require: false
+gem 'bootsnap', '>= 1.18.0', require: false
 
 # devise
 gem 'devise'
@@ -91,3 +93,6 @@ end
 gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 
 gem "nio4r", "~> 2.7"
+
+# CSS bundling (Tailwind or PostCSS). We'll wire this after install.
+gem 'cssbundling-rails'
