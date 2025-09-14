@@ -4,6 +4,7 @@
 個人開発（Rails / Docker / AWS / DaisyUI）
  
 - **レポジトリ**: https://github.com/nemdull/sakujiru-app
+- **記事**: https://qiita.com/nemdull/items/4ca51b8f9a2e814ed0a1
 
 ---
 
