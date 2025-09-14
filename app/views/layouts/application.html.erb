@@ -8,7 +8,7 @@
     <script src="https://js.pay.jp/v2/pay.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <%= stylesheet_link_tag 'application', media: 'all', 'data-turbo-track': 'reload' %>
-    <%= javascript_pack_tag 'application', 'data-turbo-track': 'reload', defer: true %>
+    <%= javascript_include_tag 'application', 'data-turbo-track': 'reload', defer: true %>
   </head>
 
   <body class="flex flex-col min-h-screen">
