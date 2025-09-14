@@ -8,8 +8,8 @@ Bundler.require(*Rails.groups)
 
 module Sakujiru
   class Application < Rails::Application
-    # Initialize configuration defaults for originally generated Rails version.
-    config.load_defaults 6.0
+    # Initialize configuration defaults for Rails 7.2
+    config.load_defaults 7.2
 
     config.i18n.default_locale = :ja
 
