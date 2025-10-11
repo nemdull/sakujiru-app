@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Sakujiru – 作字クリエイター支援プラットフォーム
 
 作字（タイポグラフィ）クリエイターの作品発信を支援し、顧客と直接つながるためのマッチング型SNS。  
@@ -108,49 +109,197 @@ bundle install
 bin/rails db:setup
 bin/rails s
 
+=======
+# sakujiru-app 開発ガイド
 
-## リポジトリの構成
+このドキュメントでは、ローカル／Docker でアプリケーションを起動するための手順、必要なバージョン、運用上のヒントをまとめています。初めてセットアップする場合は、上から順に読み進めてください。
+>>>>>>> 55c9ce9 (fix: readme)
 
-- **app/**: アプリケーションの主要なコードが含まれています。コントローラー、モデル、ビューがそれぞれのサブディレクトリに分かれています。
-- **config/**: アプリケーションの設定ファイルが含まれています。ルーティングやデータベースの設定などがここにあります。
-- **db/**: データベースのマイグレーションやスキーマが含まれています。
-- **public/**: 公開される静的ファイル（例: HTML、画像）が含まれています。
+---
 
-## 必要な手順
+## 技術スタックとバージョン
 
-1. **Rubyのインストール**: Ruby 2.7.5を使用する必要があります。
-2. **Bundlerのインストール**: `gem install bundler`を実行してBundlerをインストールします。
-3. **依存関係のインストール**: `bundle install`を実行して必要なGemをインストールします。
-4. **データベースの作成**: `rails db:create`を実行してデータベースを作成します。
-5. **データベースの初期化**: `rails db:migrate`を実行してデータベースを初期化します。
-6. **アプリケーションの起動**: `bin/rails server`を実行してアプリケーションを起動します。
+| 項目 | バージョン / 備考 |
+|------|-------------------|
+| Ruby | 3.4.5（`.ruby-version` で指定） |
+| Rails | 7.2.2.2 |
+| Bundler | 2.5.18 |
+| Node.js | 18.x 以上を推奨 |
+| Yarn | 1.22.x（Classic） |
+| データベース | PostgreSQL 13 以上 |
+| JavaScript ビルド | esbuild / Sass |
 
-## 注意事項
+---
 
-- Rubyのバージョンは2.7.5を指定してください。
-- Bundlerのバージョンは2.2.33を使用してください。
+## 必要なソフトウェアの準備
 
-## 使用するRubyのバージョン
-- Ruby 2.7.5を使用します。
+1. **Ruby**
+   - `rbenv` や `asdf` を利用して `3.4.5` をインストール
+   - 例（rbenv）:
+     ```bash
+     rbenv install 3.4.5
+     rbenv local 3.4.5
+     ```
+   - インストール後に `ruby -v` でバージョンを確認してください。
 
-## 使用するBundlerのバージョン
-- Bundler 2.2.33を使用します。
+2. **Bundler**
+   ```bash
+   gem install bundler -v 2.5.18
+   bundle -v  # Bundler version 2.5.18
+   ```
 
-## その他
+3. **Node.js / Yarn**
+   - Node.js は 18.x 以上を用意します（nvm や asdf などのバージョン管理ツール推奨）。
+   - Yarn は Classic (1.x) を利用します。未インストールの場合は以下のいずれかでセットアップしてください。
+     ```bash
+     corepack prepare yarn@1.22.22 --activate
+     # もしくは
+     npm install --global yarn@1
+     ```
 
-- テストスイートの実行方法やデプロイ手順については、必要に応じて追加してください。
+4. **PostgreSQL**
+   - ローカルに PostgreSQL 13 以上を用意し、`postgres` ユーザーで接続できる状態にします。
+   - 既に別のユーザー／パスワードを使用している場合は、後述する `.env` で接続情報を上書きしてください。
 
-## テストの実行方法
-- ローカル実行
-  - bin/rails test
-  - bundle exec rake test
-- 環境別実行
-  - RAILS_ENV=test bin/rails test
+---
 
-## デプロイ手順
-- アセットのプリコンパイル
-  - RAILS_ENV=production bundle exec rake assets:precompile
-- データベース移行
-  - RAILS_ENV=production bin/rails db:migrate
-- 本番サーバの再起動
-  - 環境依存の手順に従って再起動
+## リポジトリ構成（抜粋）
+
+- `app/` … MVC を含む Rails アプリ本体
+- `config/` … 各種設定、ルーティング、環境ごとの設定
+- `db/` … スキーマとマイグレーション
+- `public/` … 静的ファイル
+- `app/assets` / `app/javascript` … アセット・JavaScript ソース
+- `bin/` … Rails 用バイナリ（`bin/rails` など）
+
+---
+
+## 初期セットアップ手順
+
+1. **Bundler のインストールディレクトリ設定（推奨）**
+   ```bash
+   bundle config set path 'vendor/bundle'
+   ```
+   これにより、依存パッケージがプロジェクト配下 (`vendor/bundle`) にインストールされます。
+
+2. **Ruby/Rails 依存のインストール**
+   ```bash
+   bundle _2.5.18_ install
+   ```
+
+3. **JavaScript / CSS 依存のインストール**
+   ```bash
+   yarn install
+   ```
+
+4. **環境変数ファイルの作成**
+   ```bash
+   cp .env.example .env
+   ```
+   `.env` には下記の変数を設定してください。
+
+   | 変数 | 説明 | デフォルト |
+   |------|------|------------|
+   | `DATABASE_HOST` | DB 接続先ホスト | `localhost` |
+   | `DATABASE_USERNAME` | DB 接続ユーザー | `postgres` |
+   | `DATABASE_PASSWORD` | DB 接続パスワード | （空） |
+   | `PAYJP_PUBLIC_KEY` | PAY.JP 公開鍵 | 任意 |
+   | `PAYJP_SECRET_KEY` | PAY.JP 秘密鍵 | 任意 |
+
+5. **データベース初期化**
+   ```bash
+   bin/rails db:setup
+   ```
+   既存の DB がある場合は `bin/rails db:migrate` を使用してください。
+
+---
+
+## ローカル開発フロー
+
+### Rails サーバーの起動
+```bash
+bin/rails server
+```
+`http://localhost:3000` でアプリケーションが確認できます。Spring を停止したい場合は `DISABLE_SPRING=1 bin/rails server` を利用してください。
+
+### アセットの自動ビルド（任意）
+開発中にスタイル／JavaScript を自動でビルドする場合は、別のターミナルで以下を実行します。
+```bash
+yarn build:js:watch
+yarn build:css:watch
+```
+
+### CI／タスクでの代表的な Rails コマンド
+```bash
+bin/rails db:migrate        # マイグレーション実行
+bin/rails db:setup          # DB 作成 + マイグレーション + シード
+bin/rails db:reset          # DB を再作成（開発データを消去）
+bin/rails test              # Minitest 実行
+bundle exec rake test       # Rake 経由でのテスト実行
+```
+
+---
+
+## Docker を利用する場合
+
+Docker/Docker Compose が利用できる環境であれば、以下のコマンドで依存関係を意識せずに起動できます。
+
+```bash
+docker compose build
+docker compose run --rm web bin/rails db:setup
+docker compose up
+```
+
+- アプリケーション: `http://localhost:3000`
+- PostgreSQL: `localhost:5432`
+
+`docker compose down` でコンテナを停止し、永続化された DB データは `./tmp/db` に保存されます。
+
+---
+
+## テスト・ビルド・ユーティリティ
+
+| 目的 | コマンド |
+|------|----------|
+| テスト全体の実行 | `bin/rails test` |
+| 個別テストの実行 | `bin/rails test test/models/sample_test.rb` |
+| JavaScript/CSS の単発ビルド | `yarn build` |
+| JavaScript のみビルド | `yarn build:js` |
+| CSS のみビルド | `yarn build:css` |
+
+---
+
+## トラブルシューティング
+
+- **Rails サーバーが既に起動していると言われる**  
+  `tmp/pids/server.pid` を削除してから再実行してください。  
+  ```bash
+  rm -f tmp/pids/server.pid
+  bin/rails server
+  ```
+
+- **Spring 関連の不具合が発生する**  
+  ```bash
+  bin/spring stop
+  DISABLE_SPRING=1 bin/rails server
+  ```
+
+- **PostgreSQL に接続できない**  
+  `.env` の `DATABASE_HOST`／`DATABASE_USERNAME`／`DATABASE_PASSWORD` を利用環境に合わせて調整します。
+
+- **Yarn でネットワークエラーが出る**  
+  `npm config set strict-ssl false` などを試す前に、まずプロキシや VPN の設定を確認してください。
+
+---
+
+## 運用時のヒント
+
+- 依存パッケージを更新する際は、`bundle update <gem>` や `yarn upgrade` を行った後に `bin/rails test` で動作確認を行ってください。
+- 本番デプロイ時には以下の順序を推奨します。
+  1. `RAILS_ENV=production bundle exec rake assets:precompile`
+  2. `RAILS_ENV=production bin/rails db:migrate`
+  3. アプリケーションサーバーを再起動
+
+---
+
+何か不明点があれば、開発チームまで気軽に問い合わせてください。Happy coding!

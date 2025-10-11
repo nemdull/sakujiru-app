@@ -1,12 +1,12 @@
 source 'https://rubygems.org'
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
-ruby '3.3.0'
+ruby '3.4.5'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '~> 7.2.0'
 # Use postgresql as the database for Active Record
-# Database adapter (allow pg 1.x/2.x for Ruby 3.3 compatibility)
+# Database adapter (allow pg 1.x/2.x for Ruby 3.x compatibility)
 gem 'pg', '>= 1.4'
 # Use Puma as the app server (Rails 7 compatible)
 gem 'puma', '~> 6.4'
@@ -79,6 +79,8 @@ group :development do
   gem 'capistrano-rbenv', '~> 2.2'
   gem 'capistrano-rbenv-vars', '~> 0.1'
   gem 'capistrano3-puma'
+  # Ruby 3.4 no longer ships mutex_m by default; spring still expects it
+  gem 'mutex_m', '~> 0.3'
 end
 
 group :test do

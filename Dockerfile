@@ -1,4 +1,4 @@
-FROM ruby:2.7.5
+FROM ruby:3.4.5
 
 ENV APT_KEY_DONT_WARN_ON_DANGEROUS_USAGE=DontWarn
 ENV DEBCONF_NOWARNINGS=yes
@@ -17,8 +17,8 @@ RUN curl -fsSL https://dl.yarnpkg.com/debian/pubkey.gpg | gpg --dearmor -o /usr/
  && rm -rf /var/lib/apt/lists/*
 
 # RubyGems / Bundler を lockfile に合わせる
-ENV RUBYGEMS_VERSION=3.4.22 \
-    BUNDLER_VERSION=2.2.33 \
+ENV RUBYGEMS_VERSION=3.5.21 \
+    BUNDLER_VERSION=2.5.18 \
     BUNDLE_FORCE_RUBY_PLATFORM=1
 RUN gem update --system ${RUBYGEMS_VERSION} \
  && gem install bundler:${BUNDLER_VERSION}

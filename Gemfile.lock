@@ -226,6 +226,7 @@ GEM
     minitest (5.25.5)
     msgpack (1.8.0)
     multi_json (1.17.0)
+    mutex_m (0.3.0)
     net-imap (0.5.10)
       date
       net-protocol
@@ -422,6 +423,7 @@ DEPENDENCIES
   kaminari
   listen (~> 3.2)
   mini_magick
+  mutex_m (~> 0.3)
   nio4r (~> 2.7)
   payjp
   pg (>= 1.4)
@@ -440,7 +442,7 @@ DEPENDENCIES
   webdrivers
 
 RUBY VERSION
-   ruby 3.3.0p0
+   ruby 3.4.5p0
 
 BUNDLED WITH
-   2.2.33
+   2.5.18
