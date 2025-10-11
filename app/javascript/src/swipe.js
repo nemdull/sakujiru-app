@@ -1,12 +1,15 @@
 const initSwipe = () => {
-  const path = window.location.pathname
-  if (!path.startsWith("/swipe")) return
+  const container = document.querySelector(".swipe--cards")
+  if (!container) return
+
+  console.debug("[swipe] initializer attached", container)
 
   const likeButton = document.getElementById("like")
   const dislikeButton = document.getElementById("dislike")
   if (!likeButton || !dislikeButton) return
 
   const handleReaction = (reaction) => {
+    console.debug("[swipe] handleReaction called with:", reaction)
     const cards = document.querySelectorAll(".swipe--card:not(.removed)")
     if (!cards.length) return
 
@@ -33,6 +36,8 @@ const initSwipe = () => {
       reaction: reaction,
     }).toString()
 
+    console.debug("[swipe] sending reaction payload:", payload)
+
     fetch("/reactions", {
       method: "POST",
       headers: {
@@ -41,11 +46,24 @@ const initSwipe = () => {
       },
       credentials: "same-origin",
       body: payload,
-    }).catch((error) => console.error("Failed to send reaction:", error))
+    })
+      .then((response) => {
+        if (!response.ok) {
+          console.error("Failed to send reaction:", response.statusText)
+        }
+      })
+      .catch((error) => console.error("Failed to send reaction:", error))
   }
 
-  likeButton.addEventListener("click", () => handleReaction("like"))
-  dislikeButton.addEventListener("click", () => handleReaction("dislike"))
+  likeButton.addEventListener("click", (event) => {
+    event.preventDefault()
+    handleReaction("like")
+  })
+
+  dislikeButton.addEventListener("click", (event) => {
+    event.preventDefault()
+    handleReaction("dislike")
+  })
 }
 
 document.addEventListener("turbo:load", initSwipe)

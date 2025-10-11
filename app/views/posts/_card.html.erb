@@ -24,7 +24,7 @@
             <% if creator&.profile_image&.url.present? %>
               <%= image_tag creator.profile_image.url, class: "h-full w-full rounded-full object-cover" %>
             <% elsif creator %>
-              <%= user_avatar(creator.name) %>
+              <%= user_avatar(creator.name, size: 80) %>
             <% else %>
               <span class="flex h-full w-full items-center justify-center rounded-full bg-primary/10 text-primary font-medium">?</span>
             <% end %>

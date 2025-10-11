@@ -5,7 +5,7 @@
         <% if @user.profile_image&.url.present? %>
           <%= image_tag @user.profile_image.url, class: "h-full w-full rounded-full object-cover" %>
         <% else %>
-          <%= user_avatar(@user.name) %>
+          <%= user_avatar(@user.name, size: 96) %>
         <% end %>
       </div>
     </div>

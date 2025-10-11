@@ -38,8 +38,11 @@ class PostsController < ApplicationController
   end
 
   def swipe
-    @posts = Post.where.not(user_id: current_user.id)
-    @user = User.find(current_user.id)
+    @posts = Post.includes(:arts, :user)
+                 .where.not(user_id: current_user.id)
+                 .order(created_at: :desc)
+
+    @posts = @posts.offset(rand([@posts.count - 10, 0].max)).limit(10) if @posts.count > 10
   end
 
   def search
