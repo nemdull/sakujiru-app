@@ -106,6 +106,13 @@ ActiveRecord::Base.transaction do
     end
   end
 
+  users.each do |user|
+    other_posts = posts.reject { |post| post.user == user }
+    other_posts.sample([3, other_posts.size].min).each do |post|
+      Reaction.find_or_create_by!(user: user, post: post)
+    end
+  end
+
   puts "💬 Creating chat rooms..."
   chat_pairs = users.combination(2).to_a.sample([3, users.combination(2).count].min)
   chat_pairs.each do |user_a, user_b|

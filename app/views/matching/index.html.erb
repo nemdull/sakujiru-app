@@ -4,17 +4,23 @@
     <p class="text-sm text-slate-500">いいねした作品が表示されます。気になるクリエイターとは DM で直接やりとりしましょう。</p>
   </header>
 
-  <div class="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
-    <% @posts.each do |post| %>
-      <% extra_actions = capture do %>
-        <%= button_to "DM で相談", chat_rooms_path(params: { user_id: post.user_id }), method: :post, class: "btn btn-sm btn-outline border-primary/60 text-primary hover:bg-primary/10", form: { class: "inline-block" } %>
-        <%= link_to "作品を見る", post_path(post), class: "btn btn-sm border-surface-subtle text-slate-600 hover:border-primary/60 hover:bg-primary/10" %>
-      <% end %>
-      <%= render partial: "posts/card", locals: { post: post, extra_actions: extra_actions } %>
-    <% end %>
+  <div class="alert alert-info border border-info/40 bg-info/10 text-info-content text-sm">
+    <span>※ マッチング機能は現在実装予定中です。いいね一覧はサンプル表示です。</span>
   </div>
 
-  <div class="flex justify-center pt-4">
-    <%= paginate @posts %>
-  </div>
+  <% if @posts.any? %>
+    <div class="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
+      <% @posts.each do |post| %>
+        <% extra_actions = capture do %>
+          <%= button_to "DM で相談", chat_rooms_path(params: { user_id: post.user_id }), method: :post, class: "btn btn-sm btn-outline border-primary/60 text-primary hover:bg-primary/10", form: { class: "inline-block" } %>
+          <%= link_to "作品を見る", post_path(post), class: "btn btn-sm border-surface-subtle text-slate-600 hover:border-primary/60 hover:bg-primary/10" %>
+        <% end %>
+        <%= render partial: "posts/card", locals: { post: post, extra_actions: extra_actions } %>
+      <% end %>
+    </div>
+
+    <div class="flex justify-center pt-4">
+      <%= paginate @posts %>
+    </div>
+  <% end %>
 </section>

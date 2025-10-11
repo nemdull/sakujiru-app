@@ -26,9 +26,9 @@ Tinder ライクなスワイプ UI、いいね一覧、ActionCable を用いた�
 
 - **作品投稿**: 画像を複数アップロード可能なポートフォリオ投稿機能。
 - **スワイプ評価**: Tailwind CSS の stack レイアウトで Tinder 風の UI を実装。
-- **マッチング / いいね一覧**: リアクション履歴からお気に入りを素早く参照。
-- **リアルタイム DM**: ActionCable を用いたチャット機能。
-- **クレジットカード登録 (PAY.JP)**: トークンベースの安全な登録フロー。
+- **マッチング / いいね一覧**: リアクション履歴からお気に入りを素早く参照。（※ ベータ版 / 実装予定中）
+- **リアルタイム DM**: ActionCable を用いたチャット機能。（※ ベータ版 / 実装予定中）
+- **クレジットカード登録 (PAY.JP)**: トークンベースの安全な登録フロー。（※ 実装予定中、フォームはダミー）
 - **検索 / 絞り込み**: Ransack による柔軟な検索。
 
 ---
@@ -188,6 +188,20 @@ Docker 上で Rails / PostgreSQL をまとめて起動する場合の手順で�
 
 ---
 
+## 機能ステータス
+
+| 機能 | 状態 | 補足 |
+|------|------|------|
+| 作品投稿 / 一覧 / 検索 | 利用可能 | いいね・コメント・詳細表示を含む |
+| スワイプ (Like / Dislike) | 利用可能 | `/swipe` でカードをスワイプ可能 |
+| いいね一覧 | ベータ | サンプルデータを初期投入済み |
+| マッチング通知 / DM | 実装予定中 | 画面には注意書きを表示中 |
+| チャット画面 | ベータ | UI のみ、送受信はモック動作 |
+| クレジットカード登録 | 実装予定中 | PAY.JP 連携用フォームはダミー |
+| シードデータ | 利用可能 | `asset/img/avater` / `asset/img/typography` の画像を使用 |
+
+---
+
 ## 便利なコマンド
 
 | 目的 | ローカル | Docker |
@@ -230,6 +244,14 @@ Docker 上で Rails / PostgreSQL をまとめて起動する場合の手順で�
 
 - **Yarn のネットワークエラー**
   - プロキシ / VPN を解除する、もしくは `yarn install --network-timeout 600000` を試してください。
+
+- **Docker 環境が不安定 / クリーンにしたい**
+  1. `docker compose down --volumes`
+  2. `docker compose up -d --build`
+  3. `docker compose exec web yarn build`
+  4. `docker compose exec web bin/rails db:drop db:create db:migrate db:seed`
+  5. `docker compose exec web bin/rails server -b 0.0.0.0`
+  - `db:seed` では作例となるユーザー・作品・コメント・いいね・チャットが自動生成され、いいね一覧にもデータが表示されます。
 
 ---
 
