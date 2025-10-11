@@ -1,45 +1,88 @@
-<%# 投稿表示 %>
-<div class="card w-96 bg-base-100 shadow-xl mx-auto">
-  <%# 投稿画像 %>
-  <%= image_tag @post.arts.first.image.url(:medium) %>
-  <%# 投稿情報 %>
-  <div class="card-body">
-    <%# 作品詳細 %>
-    <%= @post.art_text %>
-    <%# 削除ボタン %>
-    <% if @post.user_id == current_user.id %>
-      <div class="card-actions">
-        <%= button_to "削除", post_path(@post), method: :delete, class: "btn btn-primary" %>
+<section class="space-y-6">
+  <% creator = @post.user %>
+  <div class="surface-card overflow-hidden">
+    <% image_url = @post.arts.first&.image&.url(:medium) %>
+    <% if image_url.present? %>
+      <%= image_tag image_url, class: "h-72 w-full object-cover" %>
+    <% else %>
+      <div class="flex h-72 items-center justify-center bg-surface-subtle text-slate-400">No Image</div>
+    <% end %>
+
+    <div class="space-y-5 px-6 py-6">
+      <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div class="flex items-center gap-3">
+          <div class="avatar">
+            <div class="h-12 w-12 rounded-full border border-surface-subtle bg-base-200">
+              <% if creator&.profile_image&.url.present? %>
+                <%= image_tag creator.profile_image.url, class: "h-full w-full rounded-full object-cover" %>
+              <% elsif creator %>
+                <%= user_avatar(creator.name) %>
+              <% else %>
+                <span class="flex h-full w-full items-center justify-center rounded-full bg-primary/10 text-primary font-medium">?</span>
+              <% end %>
+            </div>
+          </div>
+          <div>
+            <p class="text-sm font-semibold text-neutral"><%= creator&.name || "Unknown Creator" %></p>
+            <p class="text-xs text-slate-400"><%= @post.created_at.strftime("%Y/%m/%d %H:%M") %></p>
+          </div>
+        </div>
+        <% if creator == current_user %>
+          <div class="flex gap-2">
+            <%= link_to "編集", edit_post_path(@post), class: "btn btn-sm border-surface-subtle text-slate-600 hover:border-primary/60 hover:bg-primary/10" %>
+            <%= button_to "削除", post_path(@post), method: :delete, data: { turbo_confirm: "本当に削除しますか？" }, class: "btn btn-sm btn-error text-white" %>
+          </div>
+        <% end %>
       </div>
-    <% end %>
-  </div>
-  <%# コメント　%>
-  <%# コメント一覧　%>
-  <h2 class="mx-auto">コメント一覧</h2>
-  <div class="overflow-x-auto w-full">
-    <table class="table w-full">
-    <%# コメントテーブル　%>
-    <% @comments.each do |comment| %>
-    <% comment_user = User.find_by(id: comment.user_id) %>
-      <tr>
-        <td>
-        </td>
-        <td>
-          <%= comment.comment %>
-        </td>
-      </tr>
-    <% end %>
-    </table>
+
+      <div class="space-y-4">
+        <h1 class="text-2xl font-semibold text-neutral">作品解説</h1>
+        <p class="text-base leading-relaxed text-slate-700 whitespace-pre-line"><%= @post.art_text.presence || "説明は登録されていません。" %></p>
+      </div>
+    </div>
   </div>
 
-    <%# コメント投稿　%>
-    <div class="flex justify-center">
-      <%= form_with(model: [@post, @comment], local: true, method: :post) do |f| %>
-        <%= f.text_field :comment, class: "textarea textarea-primary" %>
-        <br>
-        <div class="text-center">
-          <%= f.submit 'コメントする', class: "btn btn-secondary" %>
+  <div class="surface-card space-y-5 px-6 py-6">
+    <div class="flex items-center justify-between">
+      <h2 class="text-xl font-semibold text-neutral">コメント</h2>
+      <span class="badge badge-modern"><%= @comments.size %> 件</span>
+    </div>
+
+    <div class="space-y-4" id="chat-messages">
+      <% @comments.each do |comment| %>
+        <% comment_user = User.find_by(id: comment.user_id) %>
+        <div class="flex gap-3 rounded-2xl border border-surface-subtle/70 bg-base-100 px-4 py-3">
+          <div class="avatar">
+            <div class="h-9 w-9 rounded-full border border-surface-subtle bg-base-200">
+              <% if comment_user&.profile_image&.url.present? %>
+                <%= image_tag comment_user.profile_image.url, class: "h-full w-full rounded-full object-cover" %>
+              <% elsif comment_user %>
+                <%= user_avatar(comment_user.name) %>
+              <% else %>
+                <span class="flex h-full w-full items-center justify-center rounded-full bg-primary/10 text-primary font-medium">?</span>
+              <% end %>
+            </div>
+          </div>
+          <div class="flex-1">
+            <div class="flex items-center gap-2 text-sm">
+              <span class="font-medium text-neutral"><%= comment_user&.name || "ゲスト" %></span>
+              <span class="text-xs text-slate-400">
+                <%= comment.created_at ? comment.created_at.strftime("%Y/%m/%d %H:%M") : "日時不明" %>
+              </span>
+            </div>
+            <p class="mt-1 text-sm text-slate-600 whitespace-pre-line"><%= comment.comment %></p>
+          </div>
+        </div>
+      <% end %>
+    </div>
+
+    <div class="space-y-3">
+      <%= form_with(model: [@post, @comment], local: true, method: :post, class: "space-y-3") do |f| %>
+        <%= f.text_area :comment, rows: 3, class: "textarea textarea-bordered w-full", placeholder: "作品への感想や質問を入力してください" %>
+        <div class="flex justify-end">
+          <%= f.submit 'コメントする', class: "btn-modern" %>
         </div>
       <% end %>
     </div>
   </div>
+</section>

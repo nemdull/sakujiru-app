@@ -1,5 +1,7 @@
 // Rails 7 entrypoint (jsbundling-rails)
 import "@hotwired/turbo-rails"
+import jquery from "jquery"
+window.$ = window.jQuery = jquery
 
 // Optional: keep UJS features if used (data-remote, method links)
 import RailsUJS from "@rails/ujs"

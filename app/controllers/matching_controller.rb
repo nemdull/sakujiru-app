@@ -7,5 +7,8 @@ class MatchingController < ApplicationController
     reaction_post_ids = Reaction.where(user_id: current_user.id).pluck(:post_id)
     # 投稿のうちいいねしたものを抜く
     @posts = Post.where(id: reaction_post_ids)
+                 .includes(:arts, :user)
+                 .page(params[:page])
+                 .per(9)
   end
 end

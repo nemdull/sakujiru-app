@@ -1,44 +1,42 @@
-<div class="hero min-h-screen bg-base-200">
-  <div class="hero-content flex-col lg:flex-row">
-    <%# avatar %>
-    <% if @user.profile_image.url.nil? %>
-      <%= user_avatar(@user.name) %>
-    <% else %>
-      <%= image_tag @user.profile_image.url, class: "profile-img" %>
-    <% end %>
-    <div>
-      <%# username %>
-      <div class="text-5xl font-bold">
-        <%= @user.name %>
+<section class="space-y-8">
+  <div class="surface-card flex flex-col gap-6 px-6 py-8 md:flex-row md:items-center">
+    <div class="avatar">
+      <div class="h-24 w-24 rounded-full border border-surface-subtle bg-base-200">
+        <% if @user.profile_image&.url.present? %>
+          <%= image_tag @user.profile_image.url, class: "h-full w-full rounded-full object-cover" %>
+        <% else %>
+          <%= user_avatar(@user.name) %>
+        <% end %>
       </div>
-      <p class="py-6">
-        <%= @user.self_introduction %>
-      </p>
-      <% if @user == current_user %>
-        <%# edit_link %>
-        <%= button_to "編集", edit_user_registration_path, method:"get", class: "btn btn-secondary" %>
+    </div>
+    <div class="flex-1 space-y-4">
+      <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+        <div>
+          <h1 class="text-3xl font-semibold text-neutral"><%= @user.name %></h1>
+          <p class="text-sm text-slate-400"><%= @user.email %></p>
+        </div>
+        <div class="flex flex-wrap gap-2">
+          <% if @user == current_user %>
+            <%= button_to "プロフィール編集", edit_user_registration_path, method: :get, class: "btn btn-sm border-surface-subtle text-slate-600 hover:border-primary/60 hover:bg-primary/10" %>
+          <% else %>
+            <%= button_to "メッセージを送る", chat_rooms_path(params: { user_id: @user.id }), method: :post, class: "btn btn-sm btn-outline border-primary/60 text-primary hover:bg-primary/10" %>
+          <% end %>
+        </div>
+      </div>
+      <p class="text-sm leading-relaxed text-slate-600"><%= @user.self_introduction.presence || "自己紹介はまだありません。" %></p>
+    </div>
+  </div>
+
+  <div class="space-y-4">
+    <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+      <h2 class="text-2xl font-semibold text-neutral">投稿作品</h2>
+      <p class="text-sm text-slate-500"><%= @posts.size %> 件の作字を公開しています。</p>
+    </div>
+
+    <div class="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
+      <% @posts.each do |post| %>
+        <%= render partial: "posts/card", locals: { post: post } %>
       <% end %>
     </div>
   </div>
-</div>
-<h1 class="font-bold text-center text-3xl">作字一覧</h1>
-<div class="grid grid-cols-1 md:grid-cols-3 mt-5">
-  <% @posts.each do |post| %>
-    <%# 投稿表示 %>
-    <div class="card w-96 bg-base-100 shadow-xl">
-      <%# 投稿画像 %>
-      <%= link_to(post_path(post)) do %>
-        <%= image_tag post.arts.first.image.url(:medium) %>
-      <% end %>
-      <%# 投稿情報 %>
-      <div class="card-body">
-        <%# 作品詳細 %>
-        <%= post.art_text %>
-        <div class="justify-end card-actions">
-
-        </div>
-
-      </div>
-    </div>
-  <% end %>
-</div>
+</section>

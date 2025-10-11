@@ -1,0 +1,48 @@
+<% creator = post.user %>
+<article class="surface-card overflow-hidden">
+  <% image_url = post.arts.first&.image&.url(:medium) %>
+
+  <% image_block = if image_url.present?
+      image_tag(image_url, class: "h-52 w-full object-cover transition duration-300 hover:scale-105")
+    else
+      content_tag(:div, "No Image", class: "flex h-52 items-center justify-center bg-surface-subtle text-slate-400")
+    end %>
+
+  <%= link_to(post_path(post), class: "block overflow-hidden") do %>
+    <%= image_block %>
+  <% end %>
+
+  <div class="space-y-4 px-5 py-4">
+    <% if post.art_text.present? %>
+      <p class="text-sm leading-relaxed text-slate-600"><%= truncate(post.art_text, length: 140) %></p>
+    <% end %>
+
+    <div class="flex items-center justify-between gap-3">
+      <div class="flex items-center gap-3">
+        <div class="avatar">
+          <div class="h-10 w-10 rounded-full border border-surface-subtle bg-base-200">
+            <% if creator&.profile_image&.url.present? %>
+              <%= image_tag creator.profile_image.url, class: "h-full w-full rounded-full object-cover" %>
+            <% elsif creator %>
+              <%= user_avatar(creator.name) %>
+            <% else %>
+              <span class="flex h-full w-full items-center justify-center rounded-full bg-primary/10 text-primary font-medium">?</span>
+            <% end %>
+          </div>
+        </div>
+        <div>
+          <p class="text-sm font-semibold text-neutral"><%= creator&.name || "Unknown Creator" %></p>
+          <p class="text-xs text-slate-400"><%= post.created_at ? post.created_at.strftime("%Y/%m/%d") : "日時不明" %></p>
+        </div>
+      </div>
+
+      <% if local_assigns[:extra_actions].present? %>
+        <div class="flex flex-wrap items-center justify-end gap-2">
+          <%= extra_actions %>
+        </div>
+      <% else %>
+        <%= link_to "作品を見る", post_path(post), class: "btn btn-sm border border-surface-subtle text-slate-600 hover:border-primary/60 hover:bg-primary/10" %>
+      <% end %>
+    </div>
+  </div>
+</article>

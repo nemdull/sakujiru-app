@@ -172,10 +172,19 @@ Docker 上で Rails / PostgreSQL をまとめて起動する場合の手順で�
 ## データベースとシードデータ
 
 - シードは `bin/rails db:seed` (または `db:setup`) で投入されます。
-- `db/dummy_images` 配下にダミー画像が存在する場合、ユーザーにプロファイル画像が設定されます。画像が無い場合はログに警告を出しつつ、画像無しでユーザーを作成します。
+- サンプルデータでは `asset/img/avater` の画像をクリエイターのプロフィールに、`asset/img/typography` の画像を作品に紐付けます。適宜ご自身の素材に差し替えてください。
+- Docker 利用時は `docker compose exec db psql -U postgres -d sakujiru_development` で DB にアクセスできます。
 - Docker 利用時は `docker compose exec db psql -U postgres -d sakujiru_development` で DB にアクセスできます。
   - `\l` で DB 一覧、`\dt` でテーブル一覧を確認。
   - ローカル環境から Docker の DB に接続する場合は `.env` 内で `DATABASE_HOST=db`, `DATABASE_USERNAME=postgres`, `DATABASE_PASSWORD=` を設定してください。
+
+---
+
+## UI テーマとスタイル
+
+- Tailwind CSS 3 + daisyUI 4 の「modern」テーマを定義しています。カラーパレットは `tailwind.config.js` の `daisyui.themes` で調整できます。
+- グローバルスタイルやカスタムコンポーネントは `app/javascript/stylesheets/application.css` の `@layer base` / `@layer components` で管理しています。必要に応じて `surface-card` や `btn-modern` などのユーティリティクラスを追加してください。
+- テーマカラーを変更した場合は `yarn build:css` を実行して `app/assets/builds/application.css` を再生成します。
 
 ---
 

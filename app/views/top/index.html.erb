@@ -1,9 +1,18 @@
-<div class="hero min-h-screen bg-base-200">
-  <div class="hero-content text-center">
-    <div class="max-w-md">
-      <h1 class="text-5xl font-bold">Sakujiruへようこそ</h1>
-      <p class="py-6">Sakujiruは作字に関わる人を応援するプラットフォームです</p>
-      <%= link_to "新規登録", new_user_registration_path, class: "btn btn-primary rounded-btn" %>
+<section class="relative overflow-hidden rounded-3xl border border-surface-subtle/80 bg-gradient-to-br from-base-100 via-surface to-surface-subtle px-6 py-20 sm:px-12">
+  <div class="mx-auto flex max-w-3xl flex-col items-center text-center gap-6">
+    <span class="inline-flex items-center rounded-full border border-primary/30 bg-primary/10 px-4 py-1 text-sm font-medium text-primary">
+      作字クリエイターのためのプラットフォーム
+    </span>
+    <h1 class="text-4xl font-bold text-neutral sm:text-5xl">
+      Sakujiru で作品を発信し、ファンと直接つながろう
+    </h1>
+    <p class="text-base leading-relaxed text-slate-600 sm:text-lg">
+      スワイプでの作品評価、リアルタイムなダイレクトメッセージ、PAY.JP による安全な支払い設定など、
+      クリエイターの活動を支える機能を揃えています。
+    </p>
+    <div class="flex flex-col items-center gap-3 sm:flex-row">
+      <%= link_to "無料で始める", new_user_registration_path, class: "btn-modern inline-flex items-center" %>
+      <%= link_to "作品一覧を見る", posts_path, class: "btn btn-outline border-surface-subtle text-slate-600 hover:border-primary/60 hover:bg-primary/10" %>
     </div>
   </div>
-</div>
+</section>

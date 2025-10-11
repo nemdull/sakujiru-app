@@ -1,3 +1,63 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  html {
+    @apply bg-base-100 text-slate-800 scroll-smooth;
+  }
+
+  body {
+    @apply font-sans bg-base-100 text-slate-800 antialiased;
+  }
+
+  a {
+    @apply text-primary transition-colors duration-200;
+  }
+
+  a:hover {
+    @apply text-primary/80;
+  }
+
+  h1, h2, h3, h4 {
+    @apply font-semibold text-neutral;
+  }
+}
+
+@layer components {
+  .surface-card {
+    @apply bg-white text-slate-800 border border-slate-200/70 shadow-soft rounded-2xl;
+  }
+
+  .surface-muted {
+    @apply bg-surface text-slate-700 rounded-xl border border-surface-subtle;
+  }
+
+  .btn-modern {
+    @apply btn btn-primary rounded-xl px-6 shadow-none transition-transform duration-200 hover:-translate-y-0.5;
+  }
+
+  .badge-modern {
+    @apply badge badge-outline border-primary text-primary font-medium px-3 py-2 rounded-full;
+  }
+
+  .pagination {
+    @apply flex items-center justify-center gap-3;
+  }
+
+  .pagination .page {
+    @apply inline-flex;
+  }
+
+  .page-link {
+    @apply inline-flex h-9 w-9 items-center justify-center rounded-full bg-slate-600 text-white text-sm font-medium transition-colors duration-200;
+  }
+
+  .page-link:hover {
+    @apply bg-primary;
+  }
+
+  .page-link--current {
+    @apply bg-primary text-white;
+  }
+}

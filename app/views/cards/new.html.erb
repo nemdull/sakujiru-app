@@ -1,27 +1,34 @@
-<div class="flex justify-center">
-  <div class="card flex-shrink-0 w-full max-w-sm shadow-2xl bg-base-100">
-    <div class="card-body">
-
-      <%# カード番号 %>
-      <div class="form-control">
-        <div id="number-form" class="payjs-outer input input-bordered"><!-- ここにカード番号入力フォームが生成されます --></div>
-      </div>
-
-      <%# 有効期限 %>
-      <div class="form-control">
-        <div id="expiry-form" class="payjs-outer input input-bordered"><!-- ここに有効期限入力フォームが生成されます --></div>
-      </div>
-
-      <%# CVC %>
-      <div class="form-control">
-        <div id="cvc-form" class="payjs-outer input input-bordered"><!-- ここにCVC入力フォームが生成されます --></div>
-      </div>
-
-      <%# 登録ボタン %>
-      <%= form_with url: pay_cards_path, method: :post, id: "card_form" do |f| %>
-        <div id="card_token"></div>
-        <%= f.submit "登録する", class:"btn", id: "info_submit" %>
-      <% end %>
+<section class="mx-auto w-full max-w-lg space-y-6">
+  <div class="space-y-2 text-center">
+    <h1 class="text-2xl font-semibold text-neutral">クレジットカード情報の登録</h1>
+    <p class="text-sm text-slate-500">PAY.JP による安全な決済フローです。入力されたカード情報は当アプリに保存されません。</p>
+    <div class="alert alert-warning border border-warning/40 bg-warning/10 text-warning-content text-xs">
+      <span>※ 決済機能は現在実装予定中です。ダミーの入力フォームとしてご利用ください。</span>
     </div>
   </div>
-</div>
+
+  <div class="surface-card space-y-4 px-6 py-6">
+    <div class="space-y-1">
+      <label class="text-sm font-medium text-neutral">カード番号</label>
+      <div id="number-form" class="payjs-outer input input-bordered"></div>
+    </div>
+
+    <div class="grid gap-4 sm:grid-cols-2">
+      <div class="space-y-1">
+        <label class="text-sm font-medium text-neutral">有効期限</label>
+        <div id="expiry-form" class="payjs-outer input input-bordered"></div>
+      </div>
+      <div class="space-y-1">
+        <label class="text-sm font-medium text-neutral">CVC</label>
+        <div id="cvc-form" class="payjs-outer input input-bordered"></div>
+      </div>
+    </div>
+
+    <%= form_with url: pay_cards_path, method: :post, id: "card_form", class: "pt-2" do |f| %>
+      <div id="card_token"></div>
+      <div class="flex justify-end">
+        <%= f.submit "登録する", class: "btn-modern", id: "info_submit" %>
+      </div>
+    <% end %>
+  </div>
+</section>

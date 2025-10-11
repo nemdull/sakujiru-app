@@ -1,23 +1,20 @@
-<h1 class="text-center font-bold text-3xl">いいね一覧</h1>
-<div class="grid grid-cols-1 md:grid-cols-3">
-  <% @posts.each do |post| %>
-    <%# 投稿表示 %>
-    <div class="card w-96 bg-base-100 shadow-xl">
-      <%# 投稿画像 %>
-      <%= link_to(post_path(post)) do %>
-        <%= image_tag post.arts.first.image.url(:medium) %>
+<section class="space-y-6">
+  <header class="flex flex-col gap-2 text-center">
+    <h1 class="text-3xl font-semibold text-neutral">お気に入りの作品</h1>
+    <p class="text-sm text-slate-500">いいねした作品が表示されます。気になるクリエイターとは DM で直接やりとりしましょう。</p>
+  </header>
+
+  <div class="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
+    <% @posts.each do |post| %>
+      <% extra_actions = capture do %>
+        <%= button_to "DM で相談", chat_rooms_path(params: { user_id: post.user_id }), method: :post, class: "btn btn-sm btn-outline border-primary/60 text-primary hover:bg-primary/10", form: { class: "inline-block" } %>
+        <%= link_to "作品を見る", post_path(post), class: "btn btn-sm border-surface-subtle text-slate-600 hover:border-primary/60 hover:bg-primary/10" %>
       <% end %>
-      <%# 投稿情報 %>
-      <div class="card-body">
-        <%# 作品詳細 %>
-        <%= post.art_text %>
-        <div class="justify-end card-actions">
-          <%# Direct Message %>
-          <%= button_to "DM", chat_rooms_path(params: { user_id: post.user_id }), method: :post, class: "btn btn-secondary"  %>
+      <%= render partial: "posts/card", locals: { post: post, extra_actions: extra_actions } %>
+    <% end %>
+  </div>
 
-        </div>
-
-      </div>
-    </div>
-  <% end %>
-</div>
+  <div class="flex justify-center pt-4">
+    <%= paginate @posts %>
+  </div>
+</section>

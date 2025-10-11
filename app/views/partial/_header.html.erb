@@ -1,65 +1,97 @@
-<div class="navbar bg-base-100">
-  <%# navbar 左　タイトルロゴ　%>
-  <div class="flex-1">
-    <%# POSTS LINK %>
-    <%= link_to "Sakujiru", root_path, class: "text-lg font-bold" %>
-  </div>
-  <%# navbar　右　%>
-  <div class="flex-none gap-2">
-    <%# ドロップダウン %>
-    <div class="dropdown dropdown-end">
-      <% if @set_current_user %>
-        <%# avatar %>
-        <% if @set_current_user.profile_image.url.nil? %>
-          <label tabindex="0" class="btn btn-ghost btn-circle avatar">
-            <div class="w-10 rounded-full">
-              <%= user_avatar(@set_current_user.name) %>
-            </div>
-          </label>
-        <% else %>
-          <label tabindex="0" class="btn btn-ghost btn-circle avatar">
-            <div class="w-10 rounded-full">
-              <%= image_tag @set_currrent_user.profile_image.url, class: "profile-img" %>
-            </div>
-          </label>
+<header class="border-b border-surface-subtle/80 bg-base-100/90 backdrop-blur">
+  <div class="mx-auto flex w-full max-w-6xl items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-10">
+    <%= link_to root_path, class: "flex items-center gap-3 text-xl font-semibold text-neutral transition hover:text-primary" do %>
+      <span class="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-primary/10 text-primary text-lg font-bold">SJ</span>
+      <span>Sakujiru</span>
+    <% end %>
+
+<% nav_links_signed_in = [
+  ["マッチング", swipe_path],
+  ["いいね一覧", matching_index_path],
+  ["作字一覧", posts_path],
+  ["クリエイター一覧", users_path]
+] %>
+
+    <% nav_links_signed_out = [
+      ["作字一覧", posts_path],
+      ["新規登録", new_user_registration_path],
+      ["ログイン", new_user_session_path]
+    ] %>
+
+    <nav class="hidden items-center gap-6 text-sm font-medium text-slate-600 md:flex">
+      <% if current_user %>
+        <% nav_links_signed_in.each do |label, path| %>
+          <%= link_to label, path, class: "hover:text-primary transition-colors" %>
         <% end %>
       <% else %>
-        <label tabindex="0" class="btn btn-ghost btn-circle avatar">
-          <div class="w-10 rounded-full">
-            <img src="https://api.lorem.space/image/face?hash=33791">
+        <% nav_links_signed_out.each do |label, path| %>
+          <%= link_to label, path, class: "hover:text-primary transition-colors" %>
+        <% end %>
+      <% end %>
+    </nav>
+
+    <div class="flex items-center gap-3">
+      <% if current_user %>
+        <%= link_to "新規投稿", new_post_path, class: "btn-modern hidden md:inline-flex items-center gap-2" %>
+      <% end %>
+
+      <div class="dropdown dropdown-end md:hidden">
+        <label tabindex="0" class="btn btn-ghost btn-circle">
+          <span class="sr-only">Open navigation</span>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-neutral" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </label>
+        <ul tabindex="0" class="menu dropdown-content mt-3 w-56 gap-1 rounded-box border border-surface-subtle bg-base-100 p-3 shadow-soft">
+          <% links = current_user ? nav_links_signed_in : nav_links_signed_out %>
+          <% links.each do |label, path| %>
+            <li><%= link_to label, path, class: "rounded-lg px-3 py-2 hover:bg-surface-subtle/60" %></li>
+          <% end %>
+          <% if current_user %>
+            <li><%= link_to "マイページ", user_path(current_user), class: "rounded-lg px-3 py-2 hover:bg-surface-subtle/60" %></li>
+            <li><%= link_to "クレジットカード", card_path(current_user), class: "rounded-lg px-3 py-2 hover:bg-surface-subtle/60" %></li>
+            <li>
+              <%= button_to "サインアウト", destroy_user_session_path, method: :delete,
+                    class: "btn btn-ghost text-error hover:bg-error/10",
+                    form: { class: "w-full" } %>
+            </li>
+          <% end %>
+        </ul>
+      </div>
+
+      <div class="dropdown dropdown-end hidden md:block">
+        <label tabindex="0" class="btn btn-ghost btn-circle avatar border border-surface-subtle/70">
+          <div class="w-10 rounded-full bg-base-200">
+            <% if current_user&.profile_image&.url.present? %>
+              <%= image_tag current_user.profile_image.url, class: "h-10 w-10 rounded-full object-cover" %>
+            <% elsif current_user %>
+              <%= user_avatar(current_user.name) %>
+            <% else %>
+              <span class="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary font-semibold">G</span>
+            <% end %>
           </div>
         </label>
-      <% end %>
-      <%# ドロップダウン　項目　%>
-      <ul tabindex="0" class="mt-3 p-2 shadow menu menu-compact dropdown-content bg-base-100 rounded-box w-52">
-        <%# ログイン後 %>
-        <% if current_user %>
-          <%# swipe %>
-          <li><%= link_to "マッチング", swipe_path, class: "btn btn-ghost btn-sm rounded-btn" %></li>
-          <%# いいねした投稿　%>
-          <li><%= link_to "いいね一覧", matching_index_path, class: "btn btn-ghost btn-sm rounded-btn"%></li>
-          <%# 作字一覧 %>
-          <li><%= link_to "作字一覧", posts_path, class: "btn btn-ghost btn-sm rounded-btn"%></li>
-          <%# 新規投稿 %>
-          <li><%= link_to "新規投稿", new_post_path, class: "btn btn-ghost btn-sm rounded-btn" %></li>
-          <%# ユーザー一覧 %>
-          <li><%= link_to "クリエイター一覧", users_path, class: "btn btn-ghost btn-sm rounded-btn" %></li>
-          <%# マイページ %>
-          <li><%= link_to "マイページ", user_path(current_user), class: "btn btn-ghost btn-sm rounded-btn" %></li>
-          <%# クレジットカード登録　%>
-          <li><%= link_to "クレジットカード", card_path(current_user), class: "btn btn-ghost btn-sm rounded-btn" %></li>
-          <%# Log out %>
-          <li><%= link_to "サインアウト", destroy_user_session_path, method: :delete, class: "btn btn-ghost btn-sm rounded-btn" %></li>
-        <%# ログイン前 %>
-        <% else %>
-          <%# 作字一覧 %>
-          <li><%= link_to "作字一覧", posts_path, class: "btn btn-ghost btn-sm rounded-btn"%></li>
-          <%# SING UP %>
-          <li><%= link_to "新規登録", new_user_registration_path, class: "btn btn-ghost btn-sm rounded-btn" %></li>
-          <%# LOG IN %>
-          <li><%= link_to "ログイン", new_user_session_path, class: "btn btn-ghost btn-sm rounded-btn" %></li>
-        <% end %>
-      </ul>
+        <ul tabindex="0" class="menu dropdown-content z-30 mt-3 w-64 rounded-box border border-surface-subtle bg-base-100 p-3 shadow-soft">
+          <% if current_user %>
+            <li class="px-3 pb-2 text-xs uppercase tracking-wide text-slate-400">メニュー</li>
+            <% nav_links_signed_in.each do |label, path| %>
+              <li><%= link_to label, path, class: "rounded-lg px-3 py-2 hover:bg-surface-subtle/60" %></li>
+            <% end %>
+            <li><%= link_to "マイページ", user_path(current_user), class: "rounded-lg px-3 py-2 hover:bg-surface-subtle/60" %></li>
+            <li><%= link_to "クレジットカード", card_path(current_user), class: "rounded-lg px-3 py-2 hover:bg-surface-subtle/60" %></li>
+            <li>
+              <%= button_to "サインアウト", destroy_user_session_path, method: :delete,
+                    class: "btn btn-ghost text-error hover:bg-error/10 w-full justify-start",
+                    form: { class: "w-full" } %>
+            </li>
+          <% else %>
+            <li class="px-3 pb-2 text-xs uppercase tracking-wide text-slate-400">アカウント</li>
+            <% nav_links_signed_out.each do |label, path| %>
+              <li><%= link_to label, path, class: "rounded-lg px-3 py-2 hover:bg-surface-subtle/60" %></li>
+            <% end %>
+          <% end %>
+        </ul>
+      </div>
     </div>
   </div>
-</div>
+</header>

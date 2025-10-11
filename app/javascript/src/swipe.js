@@ -1,53 +1,52 @@
-if(location.pathname == "/swipe") {
-  $(function(){
+const initSwipe = () => {
+  const path = window.location.pathname
+  if (!path.startsWith("/swipe")) return
 
-    // ①クリックイベント(リアクションを返す)
-    $('#like').on('click', function() {
-      createButtonListener("like");
-    })
+  const likeButton = document.getElementById("like")
+  const dislikeButton = document.getElementById("dislike")
+  if (!likeButton || !dislikeButton) return
 
-    $('#dislike').on('click', function() {
-      createButtonListener("dislike");
-    })
+  const handleReaction = (reaction) => {
+    const cards = document.querySelectorAll(".swipe--card:not(.removed)")
+    if (!cards.length) return
 
-    // ②クリックイベント
-    function createButtonListener(reaction) {
-      let cards = document.querySelectorAll('.swipe--card:not(.removed)');
+    const card = cards[0]
+    const postId = card.id
+    const moveOutWidth = document.body.clientWidth * 1.5
 
-      if (!cards.length) return false;
+    sendReaction(postId, reaction)
 
-      let moveOutWidth = document.body.clientWidth * 2;
+    card.classList.add("removed")
+    card.style.transform =
+      reaction === "like"
+        ? `translate(${moveOutWidth}px, -120px) rotate(-24deg)`
+        : `translate(-${moveOutWidth}px, -120px) rotate(24deg)`
+  }
 
-      let card = cards[0];
+  const sendReaction = (postId, reaction) => {
+    const csrfToken = document
+      .querySelector('meta[name="csrf-token"]')
+      ?.getAttribute("content")
 
-      let post_id = card.id;
+    const payload = new URLSearchParams({
+      post_id: postId,
+      reaction: reaction,
+    }).toString()
 
-      postReaction(post_id);
+    fetch("/reactions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+        "X-CSRF-Token": csrfToken || "",
+      },
+      credentials: "same-origin",
+      body: payload,
+    }).catch((error) => console.error("Failed to send reaction:", error))
+  }
 
-      card.classList.add('removed');
-
-      if (reaction == "like") {
-        card.style.transform = 'translate(' + moveOutWidth + 'px, -100px) rotate(-30deg)';
-      } else {
-        card.style.transform = 'translate(-' + moveOutWidth + 'px, -100px) rotate(30deg)';
-      }
-    }
-
-    // ③ポストリアクション
-    function postReaction(post_id) {
-      $.ajax({
-        url: "reactions",
-        type: "POST",
-        datatype: "json",
-        data: {
-          post_id: post_id,
-        }
-      })
-      .done(function () {
-        console.log("done!")
-      })
-    }
-
-
-  });
+  likeButton.addEventListener("click", () => handleReaction("like"))
+  dislikeButton.addEventListener("click", () => handleReaction("dislike"))
 }
+
+document.addEventListener("turbo:load", initSwipe)
+document.addEventListener("DOMContentLoaded", initSwipe)

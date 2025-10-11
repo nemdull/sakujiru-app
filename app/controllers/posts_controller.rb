@@ -2,6 +2,8 @@ class PostsController < ApplicationController
   before_action :authenticate_user!
   before_action :set_current_user
   before_action :set_q, only: [:index, :search]
+  before_action :set_post, only: [:show, :destroy]
+  before_action :authorize_owner!, only: [:destroy]
 
   def new
     @post = Post.new
@@ -10,29 +12,24 @@ class PostsController < ApplicationController
 
   def create
     @post = Post.new(post_params)
-    if @post.arts.present?
-      @post.save
+    if @post.arts.present? && @post.save
+      flash[:notice] = "作品を投稿しました。"
       redirect_to posts_path
-      flash[:notice] = "投稿が保存されました"
     else
-      redirect_to posts_path
-      flash[:alert] = "投稿に失敗しました"
+      flash.now[:alert] = "投稿に失敗しました。入力内容をご確認ください。"
+      @post.arts.build if @post.arts.blank?
+      render :new, status: :unprocessable_entity
     end
   end
 
   def destroy
-    @post = Post.find_by(id: params[:id])
-    if @post.user == current_user
-      flash[:notice] = "投稿が削除されました" if @post.destroy
-    else
-      flash[:alert] = "投稿の削除に失敗しました"
-    end
+    @post.destroy
+    flash[:notice] = "投稿が削除されました。"
     redirect_to posts_path
   end
 
   def show
-    @post = Post.find_by(id: params[:id])
-    @comments = @post.comments
+    @comments = @post.comments.includes(:user).order(created_at: :asc)
     @comment = @post.comments.build
   end
 
@@ -46,7 +43,7 @@ class PostsController < ApplicationController
   end
 
   def search
-    @results = @q.result
+    @results = @q.result.includes(:arts, :user).page(params[:page]).per(9)
   end
 
   private
@@ -57,5 +54,14 @@ class PostsController < ApplicationController
     def set_q
       @q = Post.ransack(params[:q])
     end
-end
 
+    def set_post
+      @post = Post.includes(:arts, :user).find(params[:id])
+    end
+
+    def authorize_owner!
+      return if @post.user == current_user
+
+      redirect_to posts_path, alert: "自身の投稿のみ削除できます。"
+    end
+end

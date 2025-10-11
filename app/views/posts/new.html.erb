@@ -1,28 +1,25 @@
-<%= form_with model: @post do |f| %>
-  <div class="flex justify-center">
-    <div class="card flex-shrink-0 w-1/2 shadow-2xl bg-base-100 justify-center">
-    
-      <%# カード中身　%>
-      <div class="card-body">
-        <div class="text-center font-bold mb-5">
-          作品を投稿する
-        </div>
-
-        <div class="form-control">
-          <%= f.text_field :art_text %>
-        </div>
-
-        <div class="form-control">
-          <%= f.fields_for :arts do |i| %>
-            <%= i.file_field :image %>
-          <% end %>
-        </div>
-
-        <div class="form-control">
-          <%= f.submit "投稿", class: "btn btn-primary" %>
-        </div>
-      <div>
-
-    </div>
+<section class="mx-auto w-full max-w-3xl space-y-6">
+  <div class="space-y-2 text-center">
+    <h1 class="text-3xl font-semibold text-neutral">作品を投稿する</h1>
+    <p class="text-sm text-slate-500">作品の紹介文と画像をアップロードしてください。画像は1枚まで登録できます。</p>
   </div>
-<% end %>
+
+  <%= form_with model: @post, local: true, html: { class: "surface-card space-y-5 px-6 py-6", multipart: true } do |f| %>
+    <div class="space-y-2">
+      <label class="text-sm font-medium text-neutral" for="post_art_text">作品の紹介</label>
+      <%= f.text_area :art_text, rows: 4, class: "textarea textarea-bordered w-full", placeholder: "作品のコンセプトや意図などを記載してください" %>
+    </div>
+
+    <div class="space-y-2">
+      <label class="text-sm font-medium text-neutral">作品画像</label>
+      <p class="text-xs text-slate-400">推奨サイズ: 1200 x 800px。対応形式: JPG, PNG, GIF。</p>
+      <%= f.fields_for :arts do |i| %>
+        <%= i.file_field :image, accept: "image/*", class: "file-input file-input-bordered w-full" %>
+      <% end %>
+    </div>
+
+    <div class="flex justify-end">
+      <%= f.submit "投稿する", class: "btn-modern" %>
+    </div>
+  <% end %>
+</section>

@@ -1,47 +1,49 @@
-<div class="user-index-page">
+<section class="space-y-8">
+  <header class="flex flex-col items-center gap-2 text-center">
+    <h1 class="text-3xl font-semibold text-neutral">スワイプで作品をチェック</h1>
+    <p class="text-sm text-slate-500">気に入った作品には「LIKE」を、スキップしたい場合は「PASS」を選択してください。</p>
+  </header>
 
-  <div class="swipe flex justify-center flex-col">
-    <div class="swipe--status">
-    </div>
+  <div class="swipe flex flex-col items-center gap-6">
+    <div class="swipe--status"></div>
 
-    <%# 重ね合わせたカード %>
-    <div class="swipe--cards stack mt-5 mb-5">
+    <div class="swipe--cards stack relative mt-4 mb-6 h-[460px] w-full max-w-md">
       <% @posts.each do |post| %>
-        <div class="swipe--card grid card w-96 bg-base-100 shadow-xl" id="<%= post.id %>">
-          <%= image_tag post.arts.first.image.url(:medium), class:"profile-img" %>
-          <%# 投稿情報 %>
-          <div class="card-body">
-            <%# 作品詳細 %>
-            <%= post.art_text %>
-            <div class="justify-end card-actions">
-              <%# user詳細　%>
-              <% post_user = User.find_by(id: post.user_id) %>
-              <%# user name %>
-              <%= post_user.name%>
-              <%# user avatar %>
-              <% if post_user.profile_image.url.nil? %>
-                <label tabindex="0" class="btn btn-ghost btn-circle avatar">
-                  <div class="w-10 rounded-full">
-                    <%= user_avatar(post_user.name) %>
-                  </div>
-                </label>
-              <% else %>
-                <label tabindex="0" class="btn btn-ghost btn-circle avatar">
-                  <div class="w-10 rounded-full">
-                    <%= image_tag post_user.profile_image.url, class: "profile-img" %>
-                  </div>
-                </label>
-              <% end %>
+        <% creator = post.user %>
+        <% image_url = post.arts.first&.image&.url(:medium) %>
+        <div class="swipe--card absolute inset-0 surface-card grid gap-4 overflow-hidden" id="<%= post.id %>">
+          <% if image_url.present? %>
+            <%= image_tag image_url, class: "h-56 w-full object-cover" %>
+          <% else %>
+            <div class="flex h-56 items-center justify-center bg-surface-subtle text-slate-400">No Image</div>
+          <% end %>
+          <div class="space-y-4 px-5 pb-5">
+            <p class="text-sm leading-relaxed text-slate-600"><%= truncate(post.art_text, length: 140) %></p>
+            <div class="flex items-center gap-3">
+              <div class="avatar">
+                <div class="h-10 w-10 rounded-full border border-surface-subtle bg-base-200">
+                  <% if creator&.profile_image&.url.present? %>
+                    <%= image_tag creator.profile_image.url, class: "h-full w-full rounded-full object-cover" %>
+                  <% elsif creator %>
+                    <%= user_avatar(creator.name) %>
+                  <% else %>
+                    <span class="flex h-full w-full items-center justify-center rounded-full bg-primary/10 text-primary font-medium">?</span>
+                  <% end %>
+                </div>
+              </div>
+              <div>
+                <p class="text-sm font-semibold text-neutral"><%= creator&.name || "Unknown Creator" %></p>
+                <p class="text-xs text-slate-400"><%= post.created_at.strftime("%Y/%m/%d") %></p>
+              </div>
             </div>
           </div>
         </div>
       <% end %>
     </div>
 
-    <div class="swipe--buttons mx-auto mb-5">
-      <button id="dislike" class="btn btn-secondary">dislike</button>
-      <button id="like" class="btn btn-primary">like</button>
+    <div class="swipe--buttons flex gap-4">
+      <button id="dislike" class="btn btn-outline border-slate-300 text-slate-600 hover:border-error/60 hover:bg-error/10">Pass</button>
+      <button id="like" class="btn-modern">Like</button>
     </div>
   </div>
-
-</div>
+</section>

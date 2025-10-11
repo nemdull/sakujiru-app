@@ -1,18 +1,32 @@
-<div class="flex justify-center">
-  <div class="card flex-shrink-0 w-full max-w-sm shadow-2xl bg-base-100">
-    <div class="card-body items-center text-center">
-      <h2 class="card-title"><%= @chat_room_user.name %>さんとのチャットルーム</h2>
-
-      <div id='chat-messages'>
-        <%= render @chat_messages %>
+<section class="mx-auto w-full max-w-3xl space-y-6">
+  <div class="surface-card space-y-4 px-6 py-6">
+    <div class="flex items-center gap-3">
+      <div class="avatar">
+        <div class="h-12 w-12 rounded-full border border-surface-subtle bg-base-200">
+          <% if @chat_room_user.profile_image&.url.present? %>
+            <%= image_tag @chat_room_user.profile_image.url, class: "h-full w-full rounded-full object-cover" %>
+          <% else %>
+            <%= user_avatar(@chat_room_user.name) %>
+          <% end %>
+        </div>
       </div>
-
-      <form class="form-control">
-        <label class="input-group input-group-md">
-          <span>DM</span>
-          <textarea data-behavior="chat_room_speaker" data-chat_room_id="<%= @chat_room.id %>" placeholder="メッセージを入力する" class="chat-room__message-form_textarea input input-bordered w-full max-w-xs"></textarea>
-        </label>
-      </form>
+      <div>
+        <h1 class="text-xl font-semibold text-neutral"><%= @chat_room_user.name %> さんとのチャット</h1>
+        <p class="text-xs text-slate-400">リアルタイムでメッセージが送信されます。</p>
+        <div class="alert alert-info mt-2 border border-info/40 bg-info/10 text-info-content text-xs">
+          <span>※ チャット機能は現在実装予定中です。メッセージ送受信はサンプル動作となります。</span>
+        </div>
+      </div>
     </div>
+
+    <div id="chat-messages" class="space-y-3 rounded-2xl border border-surface-subtle/80 bg-base-100 px-4 py-5 max-h-96 overflow-y-auto">
+      <%= render @chat_messages %>
+    </div>
+
+    <form class="space-y-2">
+      <label class="text-sm font-medium text-neutral" for="chat-room-message">メッセージ</label>
+      <textarea id="chat-room-message" data-behavior="chat_room_speaker" data-chat_room_id="<%= @chat_room.id %>" placeholder="メッセージを入力してください" class="chat-room__message-form_textarea textarea textarea-bordered w-full"></textarea>
+      <p class="text-right text-xs text-slate-400">Enter キーで送信できます。</p>
+    </form>
   </div>
-</div>
+</section>

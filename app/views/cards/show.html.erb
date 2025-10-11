@@ -1,25 +1,37 @@
-<div class="flex justify-center">
-  <div class="card flex-shrink-0 w-full max-w-sm shadow-2xl bg-base-100">
-    <div class="card-body">
-
-      <%# カード番号 %>
-      <div>
-        カード番号
-        <%= "**** **** **** " + @default_card_information.last4 %>
+<section class="mx-auto w-full max-w-lg space-y-6">
+  <div class="surface-card space-y-5 px-6 py-6">
+    <div class="space-y-2">
+      <h1 class="text-2xl font-semibold text-neutral">登録済みカード情報</h1>
+      <p class="text-sm text-slate-500">カード情報は PAY.JP にて安全に管理されています。</p>
+      <div class="alert alert-warning border border-warning/40 bg-warning/10 text-warning-content text-xs">
+        <span>※ 決済機能は現在実装予定中です。表示内容はダミーのサンプルです。</span>
       </div>
+    </div>
 
-      <%# 有効期限 %>
-      <div>
-        有効期限
-        <% exp_month = @default_card_information.exp_month.to_s %>
-        <% exp_year = @default_card_information.exp_year.to_s.slice(2,3) %>
-        <%= exp_month + " / " + exp_year %>
+    <div class="rounded-2xl border border-surface-subtle/80 bg-base-200/60 px-5 py-5">
+      <p class="text-xs uppercase tracking-wide text-slate-400">カード番号</p>
+      <p class="text-lg font-semibold text-neutral">
+        **** **** **** <%= @default_card_information.last4 %>
+      </p>
+      <div class="mt-4 flex gap-6 text-sm text-slate-600">
+        <div>
+          <p class="text-xs uppercase tracking-wide text-slate-400">有効期限</p>
+          <% exp_month = @default_card_information.exp_month.to_s %>
+          <% exp_year = @default_card_information.exp_year.to_s.slice(2,3) %>
+          <p class="font-medium"><%= "#{exp_month} / #{exp_year}" %></p>
+        </div>
+        <div>
+          <p class="text-xs uppercase tracking-wide text-slate-400">ブランド</p>
+          <p class="font-medium"><%= @default_card_information.brand %></p>
+        </div>
       </div>
+    </div>
 
-      <%# 登録ボタン %>
-      <%= form_with url:delete_cards_path, method: :post, id: 'charge-form', name: "inputForm", local: true do %>
+    <div class="flex justify-end">
+      <%= form_with url: delete_cards_path, method: :post, id: "charge-form", name: "inputForm", local: true do %>
         <input type="hidden" name="card_id" value="">
-        <button class="btn btn-primary">削除する</button>
+        <button class="btn btn-outline border-error/60 text-error hover:bg-error/10">カード情報を削除</button>
       <% end %>
+    </div>
   </div>
-</div>
+</section>
