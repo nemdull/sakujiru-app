@@ -274,6 +274,45 @@ Docker 上で Rails / PostgreSQL をまとめて起動する場合の手順で�
 
 ---
 
+## Render へのデプロイ (Docker 利用時の例)
+
+Render では Dockerfile をそのまま使用して Rails + PostgreSQL をホストできます。以下は最小構成の手順です。
+
+1. **Render アカウント作成・GitHub 連携**
+   - Render ダッシュボードで「New +」→「Web Service」→ GitHub リポジトリを選択。
+   - Environment: `Docker`
+   - Branch: デプロイしたいブランチ (例: `main`)
+   - Region は任意の近いリージョンを選択します。
+
+2. **環境変数 (Environment Variables) の設定**
+   - `RAILS_ENV=production`
+   - `RAILS_MASTER_KEY` (credentials を使用している場合に必須)
+   - PAY.JP など外部サービスの API キーも必要に応じて登録。
+
+3. **PostgreSQL を作成**
+   - Render の「New +」→「PostgreSQL」で DB を作成。
+   - Web Service の環境変数に `DATABASE_URL` が自動で連携されます。`config/database.yml` は `DATABASE_URL` を優先するため追加設定は不要です。
+
+4. **初回デプロイ後の初期化**
+   - Render の Web Service 画面で「Shell」を開き、以下を実行します。
+     ```bash
+     bundle exec rails db:setup
+     bundle exec rails db:seed
+     ```
+   - 既存 DB がある場合は `db:migrate` のみ実行してください。
+
+5. **アセットプリコンパイル**
+   - 現行の Dockerfile には `yarn build` が含まれているため追加作業は不要です。
+   - もし独自に `assets:precompile` が必要な場合は Dockerfile のビルドステップに追加するか、初回デプロイ後に `bundle exec rails assets:precompile` を実行します。
+
+6. **ログ / 再デプロイ**
+   - Render ダッシュボードの「Logs」で Puma のログを確認できます。
+   - GitHub に push すると自動で再デプロイが走ります。手動で再デプロイする場合は「Manual Deploy」を選択してください。
+
+> 💡 `docker-compose.yml` に記載したボリューム (`./tmp/db` など) は Render では利用されません。永続化は Render の管理する PostgreSQL を使う構成に切り替えてください。
+
+---
+
 ## 参考リンク
 
 - リポジトリ: <https://github.com/nemdull/sakujiru-app>
