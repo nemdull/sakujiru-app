@@ -2,6 +2,8 @@
 
 作字（タイポグラフィ）クリエイターが作品を発信し、オーダーを希望する顧客とつながるためのマッチング型 SNS です。  
 Tinder ライクなスワイプ UI、いいね一覧、ActionCable を用いたリアルタイム DM、PAY.JP 連携によるクレジットカード登録などを備えています。
+
+## Deploy 
 デプロイ先: https://sakujiru-web.onrender.com/
 
 ---
