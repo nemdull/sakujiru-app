@@ -1,305 +1,253 @@
-<<<<<<< HEAD
-# Sakujiru – 作字クリエイター支援プラットフォーム
+# Sakujiru – 作字クリエイター向けマッチングプラットフォーム
 
-作字（タイポグラフィ）クリエイターの作品発信を支援し、顧客と直接つながるためのマッチング型SNS。  
-個人開発（Rails / Docker / AWS / DaisyUI）
- 
-- **レポジトリ**: https://github.com/nemdull/sakujiru-app
-- **記事**: https://qiita.com/nemdull/items/4ca51b8f9a2e814ed0a1
+作字（タイポグラフィ）クリエイターが作品を発信し、オーダーを希望する顧客とつながるためのマッチング型 SNS です。  
+Tinder ライクなスワイプ UI、いいね一覧、ActionCable を用いたリアルタイム DM、PAY.JP 連携によるクレジットカード登録などを備えています。
 
 ---
 
-## アプリ概要
+## 目次
 
-クリエイターが作品を投稿し、閲覧者（顧客）が気に入った作風のクリエイターを見つけ、**直接交渉（DM）** できるプラットフォームです。  
-Tinder ライクな「スワイプ評価」、**いいね一覧**、**リアルタイムDM**、**クレジットカード登録（Pay.jp）** などを備えています。
+1. [主な機能](#主な機能)
+2. [技術スタック](#技術スタック)
+3. [リポジトリ構成](#リポジトリ構成)
+4. [セットアップの流れ](#セットアップの流れ)
+   - [共通準備](#共通準備)
+   - [ローカル環境での起動](#ローカル環境での起動)
+   - [Docker での起動](#docker-での起動)
+5. [データベースとシードデータ](#データベースとシードデータ)
+6. [便利なコマンド](#便利なコマンド)
+7. [トラブルシューティング](#トラブルシューティング)
+8. [デプロイ時のヒント](#デプロイ時のヒント)
+9. [参考リンク](#参考リンク)
 
 ---
 
 ## 主な機能
 
-1. **作品投稿機能**  
-
-2. **マッチング（いいね機能）**  
-
-3. **いいねした作品一覧**  
-
-4. **DM機能（ActionCable）**  
-
-5. **クレジットカード登録機能（Pay.jp）**  
-
-**使用Gem（抜粋）**  
-- devise  
-- carrierwave  
-- kaminari  
-- initials  
-- ransack  
-- actioncable  
-- payjp  
+- **作品投稿**: 画像を複数アップロード可能なポートフォリオ投稿機能。
+- **スワイプ評価**: Tailwind CSS の stack レイアウトで Tinder 風の UI を実装。
+- **マッチング / いいね一覧**: リアクション履歴からお気に入りを素早く参照。
+- **リアルタイム DM**: ActionCable を用いたチャット機能。
+- **クレジットカード登録 (PAY.JP)**: トークンベースの安全な登録フロー。
+- **検索 / 絞り込み**: Ransack による柔軟な検索。
 
 ---
 
-## 使用技術
+## 技術スタック
 
-### フロントエンド
-- HTML / CSS / JS (jQuery)  
-- Tailwind CSS + DaisyUI  
-  - `<html data-theme="aqua">` などで簡単にテーマ切替可能
-
-### バックエンド
-- Ruby 2.7.5  
-- Rails 6.0.4.6  
-- PostgreSQL 14.x  
-
-### インフラ
-- **開発**: Docker / Docker Compose  
-- **本番**: AWS (VPC, EC2, RDS, S3, Route53)  
-  - 当初は Heroku → その後 EC2 へ移行  
-
-### ツール
-- Git / GitHub / GitLab  
-- VSCode  
-- Slack / Trello / Gather  
+| レイヤー | 技術 / バージョン |
+|----------|-------------------|
+| 言語 / FW | Ruby 3.4.5, Rails 7.2.2.2 |
+| パッケージ管理 | Bundler 2.5.18, Yarn 1.22.x |
+| データベース | PostgreSQL 13+ |
+| ビルドツール | esbuild, Sass |
+| UI | Tailwind CSS, DaisyUI, jQuery, Hammer.js |
+| 認証 / 決済 | Devise, PAY.JP |
+| メッセージング | Action Cable |
+| 開発補助 | Docker / Docker Compose, Spring, Pry |
 
 ---
 
-## データベース設計
+## リポジトリ構成
 
-| テーブル         | 役割                                |
-|------------------|-------------------------------------|
-| users            | ユーザー関連（認証・プロフィール）   |
-| posts            | 投稿関連                            |
-| arts             | 投稿に紐づく画像                    |
-| reactions        | マッチングで「いいね」された履歴    |
-| comments         | コメント                            |
-| cards            | クレジットカード（トークン化情報）  |
-| chat_rooms       | チャットルーム                     |
-| chat_room_users  | チャットルーム参加者の中間テーブル |
-| chat_messages    | チャットメッセージ                  |
+- `app/` – Rails アプリ本体 (MVC)
+- `config/` – ルーティング / 環境別設定 / 初期化処理
+- `db/` – マイグレーション、スキーマ、シード
+- `app/assets`, `app/javascript` – アセット、フロントエンドソース
+- `bin/` – Rails 実行用スクリプト
+- `docker-compose.yml`, `Dockerfile` – Docker 関連設定
 
 ---
 
-## 開発において意識したこと
+## セットアップの流れ
 
-### 工夫した点
-- **マッチング機能**: Tailwind の stack プロパティを用いて Tinder風のカード重ねUIを実装  
-- **擬似チーム開発**: 機能ごとにブランチ切り→PR→レビュー→マージの流れを徹底  
-- **タイムマネジメント**: 卒研と並行して短時間を確保、場所を変えつつ進捗を維持  
+### 共通準備
 
-### 苦労した点
-- **環境構築**: Dockerfile, Compose 設定、AWS サービス間連携に度々苦戦  
-- **学習方法**: 網羅学習（Udemy）後に公式リファレンスを熟読して仕組み理解を徹底  
+| 必須ツール | 推奨バージョン | 備考 |
+|------------|----------------|------|
+| Git | 最新 | ソース管理 |
+| Node.js | 18.x 以上 | LTS 推奨 (nvm / asdf 対応) |
+| Yarn | 1.22.x (Classic) | `corepack prepare yarn@1.22.22 --activate` 等 |
+| PostgreSQL | 13 以上 | ローカル or Docker |
 
-### 今後の課題
-- 作品カテゴリの追加  
-- SNSログイン  
-- フォロー機能  
-- ゲストログイン  
-- スキルセット表示  
-- 決済フローの拡張  
-- UI改善・インフラ強化  
+以降、自分に合った環境（ローカル / Docker）を選んでセットアップしてください。
 
 ---
 
-## ローカル開発手順
+### ローカル環境での起動
 
-```bash
-# Ruby 2.7.5 前提
-bundle install
-bin/rails db:setup
-bin/rails s
-
-=======
-# sakujiru-app 開発ガイド
-
-このドキュメントでは、ローカル／Docker でアプリケーションを起動するための手順、必要なバージョン、運用上のヒントをまとめています。初めてセットアップする場合は、上から順に読み進めてください。
->>>>>>> 55c9ce9 (fix: readme)
-
----
-
-## 技術スタックとバージョン
-
-| 項目 | バージョン / 備考 |
-|------|-------------------|
-| Ruby | 3.4.5（`.ruby-version` で指定） |
-| Rails | 7.2.2.2 |
-| Bundler | 2.5.18 |
-| Node.js | 18.x 以上を推奨 |
-| Yarn | 1.22.x（Classic） |
-| データベース | PostgreSQL 13 以上 |
-| JavaScript ビルド | esbuild / Sass |
-
----
-
-## 必要なソフトウェアの準備
-
-1. **Ruby**
-   - `rbenv` や `asdf` を利用して `3.4.5` をインストール
-   - 例（rbenv）:
-     ```bash
-     rbenv install 3.4.5
-     rbenv local 3.4.5
-     ```
-   - インストール後に `ruby -v` でバージョンを確認してください。
-
-2. **Bundler**
+1. **Ruby / Bundler の準備**
    ```bash
+   rbenv install 3.4.5            # 未インストールの場合
+   rbenv local 3.4.5
    gem install bundler -v 2.5.18
-   bundle -v  # Bundler version 2.5.18
-   ```
-
-3. **Node.js / Yarn**
-   - Node.js は 18.x 以上を用意します（nvm や asdf などのバージョン管理ツール推奨）。
-   - Yarn は Classic (1.x) を利用します。未インストールの場合は以下のいずれかでセットアップしてください。
-     ```bash
-     corepack prepare yarn@1.22.22 --activate
-     # もしくは
-     npm install --global yarn@1
-     ```
-
-4. **PostgreSQL**
-   - ローカルに PostgreSQL 13 以上を用意し、`postgres` ユーザーで接続できる状態にします。
-   - 既に別のユーザー／パスワードを使用している場合は、後述する `.env` で接続情報を上書きしてください。
-
----
-
-## リポジトリ構成（抜粋）
-
-- `app/` … MVC を含む Rails アプリ本体
-- `config/` … 各種設定、ルーティング、環境ごとの設定
-- `db/` … スキーマとマイグレーション
-- `public/` … 静的ファイル
-- `app/assets` / `app/javascript` … アセット・JavaScript ソース
-- `bin/` … Rails 用バイナリ（`bin/rails` など）
-
----
-
-## 初期セットアップ手順
-
-1. **Bundler のインストールディレクトリ設定（推奨）**
-   ```bash
    bundle config set path 'vendor/bundle'
-   ```
-   これにより、依存パッケージがプロジェクト配下 (`vendor/bundle`) にインストールされます。
-
-2. **Ruby/Rails 依存のインストール**
-   ```bash
    bundle _2.5.18_ install
    ```
 
-3. **JavaScript / CSS 依存のインストール**
+2. **JavaScript 依存関係**
    ```bash
    yarn install
    ```
 
-4. **環境変数ファイルの作成**
+3. **CSS/JS アセットのビルド (初回または変更時)**
+   ```bash
+   yarn build          # JS + CSS を一括ビルド
+   # または必要な方だけ
+   yarn build:js
+   yarn build:css
+   ```
+   - `yarn build:css` は Tailwind CLI (`tailwindcss`) を用いて `app/javascript/stylesheets/application.css` をビルドし、`app/assets/builds/application.css` に出力します。
+
+4. **環境変数ファイルを作成**
    ```bash
    cp .env.example .env
    ```
-   `.env` には下記の変数を設定してください。
+   - ローカルの PostgreSQL を利用する場合は、自身の OS ユーザー名に合わせて `DATABASE_USERNAME` / `DATABASE_PASSWORD` を設定してください。  
+   - `postgres` ロールを使用したい場合は `createuser -s postgres` でロールを追加します。
 
-   | 変数 | 説明 | デフォルト |
-   |------|------|------------|
-   | `DATABASE_HOST` | DB 接続先ホスト | `localhost` |
-   | `DATABASE_USERNAME` | DB 接続ユーザー | `postgres` |
-   | `DATABASE_PASSWORD` | DB 接続パスワード | （空） |
-   | `PAYJP_PUBLIC_KEY` | PAY.JP 公開鍵 | 任意 |
-   | `PAYJP_SECRET_KEY` | PAY.JP 秘密鍵 | 任意 |
-
-5. **データベース初期化**
+5. **データベースの初期化**
    ```bash
    bin/rails db:setup
    ```
-   既存の DB がある場合は `bin/rails db:migrate` を使用してください。
+
+6. **アプリケーションの起動**
+   ```bash
+   bin/rails server           # http://localhost:3000
+   ```
+
+7. **アセットのライブビルド (必要に応じて)**
+   ```bash
+   yarn build:js:watch
+   yarn build:css:watch
+   ```
 
 ---
 
-## ローカル開発フロー
+### Docker での起動
 
-### Rails サーバーの起動
-```bash
-bin/rails server
-```
-`http://localhost:3000` でアプリケーションが確認できます。Spring を停止したい場合は `DISABLE_SPRING=1 bin/rails server` を利用してください。
+Docker 上で Rails / PostgreSQL をまとめて起動する場合の手順です。
 
-### アセットの自動ビルド（任意）
-開発中にスタイル／JavaScript を自動でビルドする場合は、別のターミナルで以下を実行します。
-```bash
-yarn build:js:watch
-yarn build:css:watch
-```
+1. **初回ビルド**
+   ```bash
+   docker compose build
+   ```
+   - 以前 Ruby 2.7 系のイメージを利用していた場合は `docker compose build --no-cache web` を実行して最新の Ruby 3.4.5 / Bundler 2.5.18 を反映させてください。
 
-### CI／タスクでの代表的な Rails コマンド
-```bash
-bin/rails db:migrate        # マイグレーション実行
-bin/rails db:setup          # DB 作成 + マイグレーション + シード
-bin/rails db:reset          # DB を再作成（開発データを消去）
-bin/rails test              # Minitest 実行
-bundle exec rake test       # Rake 経由でのテスト実行
-```
+2. **コンテナの起動**
+   ```bash
+   docker compose up -d
+   ```
+   - 警告を避けたい場合は `docker-compose.yml` 先頭の `version: '3'` 行を削除しておきます (Compose v2 では不要)。
+
+3. **依存関係のインストール (Web コンテナ内)**
+   ```bash
+   docker compose exec web bundle _2.5.18_ install
+   docker compose exec web yarn install
+   docker compose exec web yarn build
+   ```
+   - CSS の更新のみ行う場合は `docker compose exec web yarn build:css` を利用してください。
+
+4. **データベース初期化**
+   ```bash
+   docker compose exec web bin/rails db:setup
+   ```
+
+5. **アプリケーション確認**
+   - ブラウザで `http://localhost:3000` を開きます (web サービスが `3000:3000` で公開されます)。
+   - Rails サーバーを前面で確認したい場合:
+     ```bash
+     docker compose logs -f web
+     docker compose exec web bin/rails server -b 0.0.0.0
+     ```
+
+6. **停止 / 再起動**
+   ```bash
+   docker compose down             # 停止
+   docker compose up -d            # 再起動
+   ```
 
 ---
 
-## Docker を利用する場合
+## データベースとシードデータ
 
-Docker/Docker Compose が利用できる環境であれば、以下のコマンドで依存関係を意識せずに起動できます。
-
-```bash
-docker compose build
-docker compose run --rm web bin/rails db:setup
-docker compose up
-```
-
-- アプリケーション: `http://localhost:3000`
-- PostgreSQL: `localhost:5432`
-
-`docker compose down` でコンテナを停止し、永続化された DB データは `./tmp/db` に保存されます。
+- シードは `bin/rails db:seed` (または `db:setup`) で投入されます。
+- `db/dummy_images` 配下にダミー画像が存在する場合、ユーザーにプロファイル画像が設定されます。画像が無い場合はログに警告を出しつつ、画像無しでユーザーを作成します。
+- Docker 利用時は `docker compose exec db psql -U postgres -d sakujiru_development` で DB にアクセスできます。
+  - `\l` で DB 一覧、`\dt` でテーブル一覧を確認。
+  - ローカル環境から Docker の DB に接続する場合は `.env` 内で `DATABASE_HOST=db`, `DATABASE_USERNAME=postgres`, `DATABASE_PASSWORD=` を設定してください。
 
 ---
 
-## テスト・ビルド・ユーティリティ
+## 便利なコマンド
 
-| 目的 | コマンド |
-|------|----------|
-| テスト全体の実行 | `bin/rails test` |
-| 個別テストの実行 | `bin/rails test test/models/sample_test.rb` |
-| JavaScript/CSS の単発ビルド | `yarn build` |
-| JavaScript のみビルド | `yarn build:js` |
-| CSS のみビルド | `yarn build:css` |
+| 目的 | ローカル | Docker |
+|------|----------|--------|
+| DB 初期化 | `bin/rails db:setup` | `docker compose exec web bin/rails db:setup` |
+| マイグレーション | `bin/rails db:migrate` | 同左 |
+| テスト実行 | `bin/rails test` / `bundle exec rake test` | `docker compose exec web bin/rails test` |
+| Spring 停止 | `bin/spring stop` | `docker compose exec web bin/spring stop` |
+| アセットビルド | `yarn build`, `yarn build:js`, `yarn build:css` | `docker compose exec web yarn build` など |
+| Rails コンソール | `bin/rails console` | `docker compose exec web bin/rails console` |
 
 ---
 
 ## トラブルシューティング
 
-- **Rails サーバーが既に起動していると言われる**  
-  `tmp/pids/server.pid` を削除してから再実行してください。  
+- **`A server is already running` が表示される**
   ```bash
   rm -f tmp/pids/server.pid
   bin/rails server
+  # Docker の場合
+  docker compose exec web rm -f tmp/pids/server.pid
+  docker compose exec web bin/rails server -b 0.0.0.0
   ```
 
-- **Spring 関連の不具合が発生する**  
-  ```bash
-  bin/spring stop
-  DISABLE_SPRING=1 bin/rails server
-  ```
+- **Bundler / Ruby バージョン不一致 (Docker)**
+  - 古いイメージが残っている場合、`docker compose build --no-cache web` を実行して再ビルドします。
+  - コンテナ内で `gem install bundler -v 2.5.18` を行う必要があれば、`docker compose exec web gem install bundler -v 2.5.18` を実行してください。
 
-- **PostgreSQL に接続できない**  
-  `.env` の `DATABASE_HOST`／`DATABASE_USERNAME`／`DATABASE_PASSWORD` を利用環境に合わせて調整します。
+- **PostgreSQL に接続できない**
+  - ローカルでは `createuser -s postgres` や `.env` の `DATABASE_USERNAME`/`DATABASE_PASSWORD` の調整が必要な場合があります。
+  - Docker ではコンテナが起動しているか (`docker compose ps`) を確認し、必要に応じて `.env` でホスト名を `db` に設定します。
 
-- **Yarn でネットワークエラーが出る**  
-  `npm config set strict-ssl false` などを試す前に、まずプロキシや VPN の設定を確認してください。
+- **シード時に画像が無いと言われる**
+  - `db/dummy_images` に `1.jpg` 〜 `6.jpg` を配置するか、空のままでも実行は続行します（ユーザーの画像は `nil` になります）。
+
+- **`cannot load such file -- sassc` が表示される**
+  - `yarn build` が未実行で `app/assets/builds/application.css` が存在しない場合に発生します。`yarn build` または `yarn build:css` を実行してからサーバーを再起動してください。
+- **スタイルが反映されない**
+  - Tailwind のビルド結果 (`app/assets/builds/application.css`) が古い可能性があります。`yarn build:css` または Docker 環境では `docker compose exec web yarn build:css` を実行し、ブラウザのキャッシュをクリアして再読み込みしてください。
+
+- **Yarn のネットワークエラー**
+  - プロキシ / VPN を解除する、もしくは `yarn install --network-timeout 600000` を試してください。
 
 ---
 
-## 運用時のヒント
+## デプロイ時のヒント
 
-- 依存パッケージを更新する際は、`bundle update <gem>` や `yarn upgrade` を行った後に `bin/rails test` で動作確認を行ってください。
-- 本番デプロイ時には以下の順序を推奨します。
-  1. `RAILS_ENV=production bundle exec rake assets:precompile`
-  2. `RAILS_ENV=production bin/rails db:migrate`
-  3. アプリケーションサーバーを再起動
+1. 依存関係を production 向けにインストール
+   ```bash
+   bundle _2.5.18_ install --without development test
+   yarn install --production
+   ```
+2. アセットのプリコンパイル
+   ```bash
+   RAILS_ENV=production bundle exec rake assets:precompile
+   ```
+3. マイグレーション
+   ```bash
+   RAILS_ENV=production bin/rails db:migrate
+   ```
+4. アプリケーションサーバー (Puma 等) を再起動
 
 ---
 
-何か不明点があれば、開発チームまで気軽に問い合わせてください。Happy coding!
+## 参考リンク
+
+- リポジトリ: <https://github.com/nemdull/sakujiru-app>
+- Qiita 記事: <https://qiita.com/nemdull/items/4ca51b8f9a2e814ed0a1>
+- Rails ガイド: <https://railsguides.jp/>
+- PAY.JP ドキュメント: <https://pay.jp/docs/>
+
+不明点があれば Issue / PR でお気軽に連絡してください。Happy coding!

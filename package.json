@@ -25,7 +25,7 @@
     "build": "yarn build:js && yarn build:css",
     "build:js": "esbuild app/javascript/application.js --bundle --sourcemap --outdir=app/assets/builds",
     "build:js:watch": "esbuild app/javascript/application.js --bundle --sourcemap --outdir=app/assets/builds --watch",
-    "build:css": "sass app/assets/stylesheets/application.scss:app/assets/builds/application.css --no-source-map",
-    "build:css:watch": "sass --watch app/assets/stylesheets/application.scss:app/assets/builds/application.css --no-source-map"
+    "build:css": "tailwindcss -i app/javascript/stylesheets/application.css -o app/assets/builds/application.css --minify",
+    "build:css:watch": "tailwindcss -i app/javascript/stylesheets/application.css -o app/assets/builds/application.css --watch"
   }
 }
