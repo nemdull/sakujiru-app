@@ -58,12 +58,12 @@ Tinder ライクなスワイプ UI、いいね一覧、ActionCable を用いた�
 | パス | 概要 |
 |------|------|
 | `app/` | Rails 7 の MVC コード。コントローラ・モデル・ビュー・フロントエンド資産を格納。 |
-| `asset/` | シード用のサンプル画像 (`img/`) とビルド済み CSS (`css/`)・SourceMap。 |
+| `asset/` | シード用のサンプル画像 (`img/`) を格納。 |
 | `bin/` | `bin/rails` など Rails が自動生成するコマンドラッパー。 |
 | `config/` | ルーティング、環境設定、Capistrano のデプロイ設定。 |
 | `db/` | マイグレーション・スキーマ定義・サンプルデータ (`seeds.rb`)。 |
 | `lib/` | 追加タスクやライブラリの置き場（現状は空）。 |
-| `public/` | エラーページ、favicon、Webpacker 生成物 (`packs/`)、アップロード済みファイル。 |
+| `public/` | エラーページ、favicon、アップロード済みファイル。 |
 | `storage/` | Active Storage のローカル保存先。 |
 | `test/` | Minitest ベースのモデル / コントローラ / チャネルテスト。 |
 | `vendor/` | `bundle config set path 'vendor/bundle'` によりインストールされた gem。 |
@@ -71,8 +71,8 @@ Tinder ライクなスワイプ UI、いいね一覧、ActionCable を用いた�
 | `log/`, `tmp/` | 実行時ログ、PID、キャッシュなどの一時ファイル。 |
 | `Dockerfile`, `docker-compose.yml`, `entrypoint.sh` | Docker 開発環境のビルド / 起動設定。 |
 | `Gemfile`, `Gemfile.lock` | Ruby 依存関係。 |
-| `package.json`, `yarn.lock`, `package-lock.json` | JavaScript 依存関係とビルドスクリプト。 |
-| `tailwind.config.js`, `postcss.config.js`, `babel.config.js`, `.browserslistrc` | フロントエンドビルドの設定ファイル。 |
+| `package.json`, `yarn.lock` | JavaScript 依存関係とビルドスクリプト。 |
+| `tailwind.config.js`, `postcss.config.js`, `.browserslistrc` | フロントエンドビルドの設定ファイル。 |
 | `.env.example`, `.ruby-version`, `Capfile`, `config/deploy/`, `erd.pdf` | 環境変数テンプレ、Ruby バージョン指定、Capistrano 設定、ER 図。 |
 
 ### アプリケーションコード (`app/`)
@@ -113,7 +113,6 @@ Tinder ライクなスワイプ UI、いいね一覧、ActionCable を用いた�
   - `src/swipe.js`: スワイプ UI のリアクション処理とアニメーション。
   - `src/payjp.js`: PAY.JP Elements でカード情報をトークン化。
   - `channels/`: Action Cable 用の `chat_room_channel` と `consumer`。
-  - `packs/`: Webpacker 時代のエントリーポイント（互換維持のため残置）。
   - `stylesheets/`: Tailwind エントリーポイント (`application.css`)。
 - **assets/**
   - `stylesheets/`: ページ単位の SCSS。`application.scss` で束ねる。
@@ -138,7 +137,6 @@ Tinder ライクなスワイプ UI、いいね一覧、ActionCable を用いた�
 - `initializers/`: Devise、CarrierWave（S3/Fog 切り替えとログ抑止）、Kaminari、資産パイプラインなどの初期化処理。
 - `locales/`: `ja.yml` を中心に Devise メッセージや日付表記を日本語化。`en.yml` と `devise.en.yml` も同梱。
 - `deploy.rb`, `deploy/production.rb`: Capistrano 3 系の設定。Puma / Nginx / linked_dirs / SSH 鍵を指定。
-- `webpack/` と `webpacker.yml`: 旧 Webpacker 互換設定を保持。
 
 ### データベース (`db/`)
 
@@ -158,12 +156,11 @@ Tinder ライクなスワイプ UI、いいね一覧、ActionCable を用いた�
 ### フロントエンド / ビルド関連
 
 - `package.json`: esbuild + Tailwind + DaisyUI を使ったビルドスクリプト (`yarn build`, `build:js`, `build:css`) を定義。
-- `yarn.lock`, `package-lock.json`: Yarn / npm それぞれのロックファイル。
+- `yarn.lock`: Yarn のロックファイル。
 - `tailwind.config.js`: カスタムテーマ（`modern` カラーパレット、フォント、DaisyUI 設定）とスキャン対象。
 - `postcss.config.js`: Tailwind、postcss-import、preset-env などのプラグインチェーン。
-- `babel.config.js`: 環境別プリセットとプラグインを定義した Babel 設定。
 - `.browserslistrc`: CSS/JS トランスパイル対象ブラウザ。
-- `app/assets/builds/`, `public/packs/`: `yarn build` 実行後に生成されるバンドル成果物。
+- `app/assets/builds/`: `yarn build` 実行後に生成されるバンドル成果物。
 
 ### デプロイ / 開発環境
 
@@ -174,9 +171,8 @@ Tinder ライクなスワイプ UI、いいね一覧、ActionCable を用いた�
 
 ### 補助ディレクトリ・ファイル
 
-- `asset/css`: Tailwind とは別に書き出されたページ単位のプレーン CSS と SourceMap。
 - `asset/img/avater`, `asset/img/typography`: `seeds.rb` が読み込むダミー画像セット。
-- `public/`: エラーページ (`404.html` など)、`uploads/`（CarrierWave の保存先）、`packs/js`（ブラウザ読み込み用バンドル）。
+- `public/`: エラーページ (`404.html` など) と `uploads/`（CarrierWave の保存先）。
 - `bin/`: `bin/rails`, `bin/setup`, `bin/yarn` などのスクリプト群。
 - `lib/assets`, `lib/tasks`: 追加アセットや Rake タスクの置き場（現在は空）。
 - `.env.example`: DB や API キー設定のテンプレート。

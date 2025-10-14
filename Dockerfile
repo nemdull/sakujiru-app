@@ -37,9 +37,6 @@ COPY . /sakujiru
 
 RUN yarn install --check-files
 
-# （開発ならスキップ可。必要なら） 
-# RUN bundle exec rails webpacker:compile
-
 COPY entrypoint.sh /usr/bin/entrypoint.sh
 RUN chmod +x /usr/bin/entrypoint.sh
 ENTRYPOINT ["/usr/bin/entrypoint.sh"]
