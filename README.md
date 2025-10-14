@@ -53,12 +53,136 @@ Tinder ライクなスワイプ UI、いいね一覧、ActionCable を用いた�
 
 ## リポジトリ構成
 
-- `app/` – Rails アプリ本体 (MVC)
-- `config/` – ルーティング / 環境別設定 / 初期化処理
-- `db/` – マイグレーション、スキーマ、シード
-- `app/assets`, `app/javascript` – アセット、フロントエンドソース
-- `bin/` – Rails 実行用スクリプト
-- `docker-compose.yml`, `Dockerfile` – Docker 関連設定
+### 全体像
+
+| パス | 概要 |
+|------|------|
+| `app/` | Rails 7 の MVC コード。コントローラ・モデル・ビュー・フロントエンド資産を格納。 |
+| `asset/` | シード用のサンプル画像 (`img/`) とビルド済み CSS (`css/`)・SourceMap。 |
+| `bin/` | `bin/rails` など Rails が自動生成するコマンドラッパー。 |
+| `config/` | ルーティング、環境設定、Capistrano のデプロイ設定。 |
+| `db/` | マイグレーション・スキーマ定義・サンプルデータ (`seeds.rb`)。 |
+| `lib/` | 追加タスクやライブラリの置き場（現状は空）。 |
+| `public/` | エラーページ、favicon、Webpacker 生成物 (`packs/`)、アップロード済みファイル。 |
+| `storage/` | Active Storage のローカル保存先。 |
+| `test/` | Minitest ベースのモデル / コントローラ / チャネルテスト。 |
+| `vendor/` | `bundle config set path 'vendor/bundle'` によりインストールされた gem。 |
+| `node_modules/` | Yarn で取得したフロントエンド依存。 |
+| `log/`, `tmp/` | 実行時ログ、PID、キャッシュなどの一時ファイル。 |
+| `Dockerfile`, `docker-compose.yml`, `entrypoint.sh` | Docker 開発環境のビルド / 起動設定。 |
+| `Gemfile`, `Gemfile.lock` | Ruby 依存関係。 |
+| `package.json`, `yarn.lock`, `package-lock.json` | JavaScript 依存関係とビルドスクリプト。 |
+| `tailwind.config.js`, `postcss.config.js`, `babel.config.js`, `.browserslistrc` | フロントエンドビルドの設定ファイル。 |
+| `.env.example`, `.ruby-version`, `Capfile`, `config/deploy/`, `erd.pdf` | 環境変数テンプレ、Ruby バージョン指定、Capistrano 設定、ER 図。 |
+
+### アプリケーションコード (`app/`)
+
+- **controllers/**
+  - `application_controller.rb`: Devise の許可パラメータと `set_current_user` を定義。
+  - `cards_controller.rb`: PAY.JP でのカード登録・表示・削除を担当。
+  - `chat_rooms_controller.rb`: DM ルームの作成と参加者ビュー (`show`) を実装。
+  - `comments_controller.rb`: 投稿へのコメント作成。
+  - `matching_controller.rb`: いいね済み投稿（`Reaction`）の一覧表示。
+  - `posts_controller.rb`: 投稿の作成 / 一覧 / 詳細 / 削除、スワイプ UI、`ransack` 検索を提供。
+  - `reactions_controller.rb`: スワイプ操作からのいいね / 取り消しを非同期で処理。
+  - `registrations_controller.rb`, `sessions_controller.rb`: Devise の遷移先をカスタマイズ（登録・ログイン後は `swipe_path`）。
+  - `top_controller.rb`: LP 表示用トップページ。
+  - `users_controller.rb`: クリエイター一覧とプロフィール詳細。
+  - `concerns/`: 将来の共通モジュール置き場（現状は空）。
+- **models/**
+  - `user.rb`: Devise 認証と投稿・コメント・リアクション・チャット・カードとの関連、プロフィール画像アップロード。
+  - `post.rb`: 作字投稿本体。`arts` のネスト登録と `ransack` 用許可属性を定義。
+  - `art.rb`: 投稿画像モデル。CarrierWave + MiniMagick で 1080px にリサイズ。
+  - `comment.rb`, `reaction.rb`: コメントとリアクション。`reaction` はユーザー × 投稿でユニーク制約。
+  - `card.rb`: PAY.JP の `customer_id` と `card_id` を保持。
+  - `chat_room.rb`, `chat_room_user.rb`, `chat_message.rb`: DM のルーム・参加者・メッセージを表現。`ChatMessage` 作成時に Action Cable にブロードキャスト。
+  - `application_record.rb`, `concerns/`: Rails 標準のベースクラスと共通モジュール置き場。
+- **views/**
+  - `layouts/`, `partial/`: 共通レイアウトとヘッダー / フッター、フラッシュ表示。
+  - `top/`: ランディングページ。
+  - `posts/`: 一覧・詳細・投稿フォーム・検索・スワイプ UI (`swipe.html.erb`)。
+  - `matching/`: いいね済み投稿のカード表示とページネーション。
+  - `chat_rooms/` + `chat_messages/`: DM 画面とメッセージ部分テンプレート。
+  - `users/`: クリエイター一覧とプロフィール。
+  - `cards/`: PAY.JP カード登録フォーム / 確認画面。
+  - `devise/`: 認証画面を Tailwind ベースでカスタマイズ。
+  - `kaminari/`: ページネーション用テーマ。
+- **javascript/**
+  - `application.js`: Turbo / jQuery / Rails UJS / ActiveStorage を初期化し、アプリ固有の JS を読み込むエントリーポイント。
+  - `src/profile_image_upload.js`: プロフィール画像の即時プレビュー。
+  - `src/swipe.js`: スワイプ UI のリアクション処理とアニメーション。
+  - `src/payjp.js`: PAY.JP Elements でカード情報をトークン化。
+  - `channels/`: Action Cable 用の `chat_room_channel` と `consumer`。
+  - `packs/`: Webpacker 時代のエントリーポイント（互換維持のため残置）。
+  - `stylesheets/`: Tailwind エントリーポイント (`application.css`)。
+- **assets/**
+  - `stylesheets/`: ページ単位の SCSS。`application.scss` で束ねる。
+  - `builds/`: `yarn build` 実行時に生成される JS/CSS。
+  - `config/manifest.js`: Sprockets へのアセット登録。
+  - `images/`: 画像のプレースホルダー。
+- **uploaders/**
+  - `ImageUploader`: 投稿画像をローカル or S3 に保存し、`:medium` バージョンを生成。
+  - `ProfileImageUploader`: プロフィール画像用アップローダー（400px サムネイル）。
+- **jobs/**
+  - `chat_message_broadcast_job.rb`: 作成されたチャットメッセージを Action Cable へ配信。
+- **channels/application_cable/**: WebSocket 接続のベースクラス。
+- **helpers/**: `ApplicationHelper#user_avatar` で initials ベースの SVG アバターを生成。
+- **mailers/**: `ApplicationMailer`（現状デフォルト設定）。
+
+### 設定 (`config/`)
+
+- `application.rb`, `environment.rb`, `environments/*.rb`: Rails 本体と環境別設定。
+- `routes.rb`: 投稿・スワイプ・マッチング・DM・PAY.JP カード管理など全ルーティング。
+- `database.yml`, `cable.yml`, `storage.yml`, `puma.rb`, `boot.rb`, `spring.rb`: DB 接続や Action Cable、Active Storage、Puma、Spring の基本設定。
+- `credentials.yml.enc` + `master.key`: Rails 資格情報。
+- `initializers/`: Devise、CarrierWave（S3/Fog 切り替えとログ抑止）、Kaminari、資産パイプラインなどの初期化処理。
+- `locales/`: `ja.yml` を中心に Devise メッセージや日付表記を日本語化。`en.yml` と `devise.en.yml` も同梱。
+- `deploy.rb`, `deploy/production.rb`: Capistrano 3 系の設定。Puma / Nginx / linked_dirs / SSH 鍵を指定。
+- `webpack/` と `webpacker.yml`: 旧 Webpacker 互換設定を保持。
+
+### データベース (`db/`)
+
+- `migrate/`: Devise ユーザー・プロフィール拡張、投稿 (`posts` + `arts`)、コメント、リアクション、チャット、PAY.JP カード保存など 12 本のマイグレーション。
+- `schema.rb`: 現行のテーブル / インデックス定義。
+- `seeds.rb`: サンプルユーザー・投稿・コメント・リアクション・チャットを生成。`asset/img/` 配下のダミー画像を読み込みつつ既存データをリセット。
+
+### テスト (`test/`)
+
+- `test_helper.rb`, `application_system_test_case.rb`: Minitest 設定と SystemTest ベースクラス。
+- `models/`: 各モデルの関連 / バリデーションテスト。
+- `controllers/`: 認証必須や CRUD のリクエストテスト。
+- `channels/`: Action Cable チャンネルの接続テスト。
+- `fixtures/`: ユーザー・投稿・チャット関連のサンプルデータ。`files/` はアップロード用プレースホルダー。
+- `system/`, `integration/`, `jobs/`, `mailers/`: 追加テスト用の雛形。
+
+### フロントエンド / ビルド関連
+
+- `package.json`: esbuild + Tailwind + DaisyUI を使ったビルドスクリプト (`yarn build`, `build:js`, `build:css`) を定義。
+- `yarn.lock`, `package-lock.json`: Yarn / npm それぞれのロックファイル。
+- `tailwind.config.js`: カスタムテーマ（`modern` カラーパレット、フォント、DaisyUI 設定）とスキャン対象。
+- `postcss.config.js`: Tailwind、postcss-import、preset-env などのプラグインチェーン。
+- `babel.config.js`: 環境別プリセットとプラグインを定義した Babel 設定。
+- `.browserslistrc`: CSS/JS トランスパイル対象ブラウザ。
+- `app/assets/builds/`, `public/packs/`: `yarn build` 実行後に生成されるバンドル成果物。
+
+### デプロイ / 開発環境
+
+- `Dockerfile`: Ruby 3.4.5 ベースで Yarn を導入し、Bundle / Yarn install を済ませるビルド。
+- `docker-compose.yml`: Rails + PostgreSQL のローカル開発向け構成。
+- `entrypoint.sh`: Docker 起動時に残留 PID を削除してからコマンド実行。
+- `Capfile`: Capistrano プラグイン（rbenv, bundler, rails, puma, nginx）読み込み。
+
+### 補助ディレクトリ・ファイル
+
+- `asset/css`: Tailwind とは別に書き出されたページ単位のプレーン CSS と SourceMap。
+- `asset/img/avater`, `asset/img/typography`: `seeds.rb` が読み込むダミー画像セット。
+- `public/`: エラーページ (`404.html` など)、`uploads/`（CarrierWave の保存先）、`packs/js`（ブラウザ読み込み用バンドル）。
+- `bin/`: `bin/rails`, `bin/setup`, `bin/yarn` などのスクリプト群。
+- `lib/assets`, `lib/tasks`: 追加アセットや Rake タスクの置き場（現在は空）。
+- `.env.example`: DB や API キー設定のテンプレート。
+- `.ruby-version`: プロジェクト推奨 Ruby バージョン (`3.4.5`)。
+- `.bundle/`: Bundler の設定キャッシュ。
+- `erd.pdf`: アプリケーション全体の ER 図。
 
 ---
 
