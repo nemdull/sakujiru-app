@@ -76,6 +76,7 @@ Tinder ライクなスワイプ UI、いいね一覧、ActionCable を用いた�
 | `package.json`, `yarn.lock` | JavaScript 依存関係とビルドスクリプト。 |
 | `tailwind.config.js`, `.browserslistrc` | フロントエンドビルドの設定ファイル。 |
 | `.env.example`, `.ruby-version`, `Capfile`, `config/deploy/`, `erd.pdf` | 環境変数テンプレ、Ruby バージョン指定、Capistrano 設定、ER 図。 |
+| `vercel.json` | Vercel にはデプロイしない、という設定だけを書いたファイル（このアプリは Rails なので Vercel では動かない。つないだままだと、push のたびに失敗の印が付く）。 |
 
 ### アプリケーションコード (`app/`)
 
