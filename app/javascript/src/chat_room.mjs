@@ -46,6 +46,7 @@ export function connectChatRoom(consumer, root = document) {
     disconnect() {
       input.removeEventListener("keydown", onKeydown)
       subscription.unsubscribe()
+      delete list.dataset.chatReady
     },
   }
 }

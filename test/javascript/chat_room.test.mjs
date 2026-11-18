@@ -167,10 +167,12 @@ test("自分の発言と相手の発言で、足す見た目を変える", () =>
 })
 
 test("画面を離れるときは、購読をやめて、キー入力も聞かない", () => {
-  const { input, consumer, room } = chatScreen()
+  const { list, input, consumer, room } = chatScreen()
+  consumer.handlers.connected()
 
   room.disconnect()
 
   assert.equal(consumer.unsubscribed, 1)
   assert.equal(input.listening("keydown"), false)
+  assert.equal(list.dataset.chatReady, undefined, "つながっている印も外す")
 })

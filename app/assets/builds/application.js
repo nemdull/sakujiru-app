@@ -16522,6 +16522,7 @@
       disconnect() {
         input.removeEventListener("keydown", onKeydown);
         subscription.unsubscribe();
+        delete list.dataset.chatReady;
       }
     };
   }
@@ -16553,10 +16554,11 @@
   });
 
   // app/javascript/src/swipe.js
+  var ready = /* @__PURE__ */ new WeakSet();
   var initSwipe = () => {
     const container = document.querySelector(".swipe--cards");
-    if (!container || container.dataset.swipeReady) return;
-    container.dataset.swipeReady = "true";
+    if (!container || ready.has(container)) return;
+    ready.add(container);
     const likeButton = document.getElementById("like");
     const dislikeButton = document.getElementById("dislike");
     if (!likeButton || !dislikeButton) return;

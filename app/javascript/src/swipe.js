@@ -1,8 +1,12 @@
+// ボタンの処理をつなぎ終えた画面。印を HTML に書くと、Turbo が「戻る」で復元した画面
+// （印だけ残って、処理はつながっていない）を見分けられないので、要素そのものを覚えておく
+const ready = new WeakSet()
+
 const initSwipe = () => {
   const container = document.querySelector(".swipe--cards")
   // 最初の表示では DOMContentLoaded と turbo:load の両方が来る。2 回つなぐと、1 回押しただけで 2 枚進んでしまう
-  if (!container || container.dataset.swipeReady) return
-  container.dataset.swipeReady = "true"
+  if (!container || ready.has(container)) return
+  ready.add(container)
 
   const likeButton = document.getElementById("like")
   const dislikeButton = document.getElementById("dislike")

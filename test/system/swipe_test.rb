@@ -10,7 +10,9 @@ class SwipeTest < ApplicationSystemTestCase
 
     click_button "Like"
 
-    assert_selector ".swipe--card.removed", count: 1
+    # 進んだカードは画面の外へ飛ばすので、見えていないものも数える
+    assert_selector ".swipe--card.removed", count: 1, visible: :all
+    assert_selector ".swipe--card:not(.removed)", count: 1, visible: :all
     assert_eventually { users(:aoi).reactions.count == 1 }
   end
 
@@ -20,7 +22,7 @@ class SwipeTest < ApplicationSystemTestCase
 
     click_button "Pass"
 
-    assert_selector ".swipe--card.removed", count: 1
+    assert_selector ".swipe--card.removed", count: 1, visible: :all
     assert_equal 0, users(:aoi).reactions.count
   end
 end
