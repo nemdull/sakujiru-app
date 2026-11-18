@@ -1,0 +1,18 @@
+<section class="mx-auto w-full max-w-3xl space-y-6">
+  <div class="space-y-2 text-center">
+    <h1 class="text-3xl font-semibold text-neutral">作品の紹介を編集する</h1>
+    <p class="text-sm text-slate-500">紹介文を書き直せます。画像は変えられません。</p>
+  </div>
+
+  <%= form_with model: @post, local: true, html: { class: "surface-card space-y-5 px-6 py-6" } do |f| %>
+    <div class="space-y-2">
+      <label class="text-sm font-medium text-neutral" for="post_art_text">作品の紹介</label>
+      <%= f.text_area :art_text, rows: 6, maxlength: Post::MAX_TEXT_LENGTH, class: "textarea textarea-bordered w-full", placeholder: "作品のコンセプトや意図などを記載してください" %>
+    </div>
+
+    <div class="flex items-center justify-end gap-2">
+      <%= link_to "やめる", post_path(@post), class: "btn btn-sm border-surface-subtle text-slate-600 hover:border-primary/60 hover:bg-primary/10" %>
+      <%= f.submit "更新する", class: "btn-modern" %>
+    </div>
+  <% end %>
+</section>

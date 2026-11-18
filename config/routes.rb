@@ -4,7 +4,7 @@ Rails.application.routes.draw do
 
   root "top#index"
 
-  resources :posts, only: %i(new create index show destroy) do
+  resources :posts, only: %i(new create index show edit update destroy) do
     resources :comments, only: %i(create destroy)
     collection do
       get 'search'
