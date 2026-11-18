@@ -65,6 +65,58 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
     assert_equal users(:aoi), Post.order(:id).last.user
   end
 
+  test "自分の投稿の詳細も開ける。編集と削除のボタンが出る" do
+    sign_in users(:aoi)
+
+    get post_path(posts(:aoi_logo))
+
+    assert_response :success
+    assert_select "a[href=?]", edit_post_path(posts(:aoi_logo)), text: "編集"
+  end
+
+  test "ほかの人の投稿の詳細には、編集のボタンが出ない" do
+    sign_in users(:aoi)
+
+    get post_path(posts(:ren_poster))
+
+    assert_select "a[href=?]", edit_post_path(posts(:ren_poster)), count: 0
+  end
+
+  test "自分の投稿の紹介文を書き直せる" do
+    sign_in users(:aoi)
+
+    get edit_post_path(posts(:aoi_logo))
+    assert_response :success
+
+    patch post_path(posts(:aoi_logo)), params: { post: { art_text: "書き直した紹介文です" } }
+
+    assert_redirected_to post_path(posts(:aoi_logo))
+    assert_equal "書き直した紹介文です", posts(:aoi_logo).reload.art_text
+  end
+
+  test "長すぎる紹介文には書き直せない" do
+    sign_in users(:aoi)
+
+    patch post_path(posts(:aoi_logo)), params: { post: { art_text: "あ" * (Post::MAX_TEXT_LENGTH + 1) } }
+
+    assert_response :unprocessable_entity
+    assert_equal "喫茶店のロゴを作りました。", posts(:aoi_logo).reload.art_text
+  end
+
+  test "ほかの人の投稿は書き直せない。持ち主も変えられない" do
+    sign_in users(:aoi)
+
+    get edit_post_path(posts(:ren_poster))
+    assert_redirected_to posts_path
+
+    patch post_path(posts(:ren_poster)), params: { post: { art_text: "乗っ取り", user_id: users(:aoi).id } }
+
+    assert_redirected_to posts_path
+    assert_equal "自身の投稿のみ編集できます。", flash[:alert]
+    assert_equal "夏祭りのポスター用の作字です。", posts(:ren_poster).reload.art_text
+    assert_equal users(:ren), posts(:ren_poster).user
+  end
+
   test "自分の投稿は消せる" do
     sign_in users(:aoi)
 
