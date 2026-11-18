@@ -1,11 +1,17 @@
-# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+# パスワードはどれも "password123"
+aoi:
+  name: あおい
+  email: aoi@example.com
+  encrypted_password: <%= Devise::Encryptor.digest(User, "password123") %>
+  self_introduction: 筆文字を中心に作っています。
 
-# This model initially had no columns defined. If you add columns to the
-# model remove the '{}' from the fixture names and add the columns immediately
-# below each fixture, per the syntax in the comments below
-#
-one: {}
-# column: value
-#
-two: {}
-# column: value
+ren:
+  name: れん
+  email: ren@example.com
+  encrypted_password: <%= Devise::Encryptor.digest(User, "password123") %>
+
+# あおい・れんのどちらともチャットをしていない人
+mio:
+  name: みお
+  email: mio@example.com
+  encrypted_password: <%= Devise::Encryptor.digest(User, "password123") %>

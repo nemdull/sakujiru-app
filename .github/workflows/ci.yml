@@ -1,0 +1,65 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: テスト（Rails・JavaScript・ブラウザー）
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      RAILS_ENV: test
+      DATABASE_HOST: localhost
+      DATABASE_USERNAME: postgres
+      DATABASE_PASSWORD: postgres
+      DISABLE_SPRING: "1"
+
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+
+      # Ruby の版は .ruby-version、gem の版は Gemfile.lock のとおりに入れる
+      - uses: ruby/setup-ruby@319994f95fa847cf3fb3cd3dbe89f6dcde9f178f # v1.295.0
+        with:
+          bundler-cache: true
+
+      - name: JavaScript のテスト（チャットの画面）
+        run: node --test test/javascript/chat_room.test.mjs
+
+      # 書き出し先を tmp にして、db/schema.rb は書き換えない
+      - name: マイグレーションを、最初から最後まで流せるか
+        run: bin/rails db:create db:migrate
+        env:
+          SCHEMA: tmp/schema_from_migrations.rb
+
+      - name: db/schema.rb からデータベースを作り直す
+        run: bin/rails db:schema:load
+
+      - name: Rails のテスト
+        run: bin/rails test
+
+      - name: ブラウザーを使うテスト（チャットが相手にだけ届くか）
+        run: bin/rails test:system

@@ -26,6 +26,7 @@
     "build:js": "esbuild app/javascript/application.js --bundle --sourcemap --outdir=app/assets/builds",
     "build:js:watch": "esbuild app/javascript/application.js --bundle --sourcemap --outdir=app/assets/builds --watch",
     "build:css": "tailwindcss -i app/javascript/stylesheets/application.css -o app/assets/builds/application.css --minify",
-    "build:css:watch": "tailwindcss -i app/javascript/stylesheets/application.css -o app/assets/builds/application.css --watch"
+    "build:css:watch": "tailwindcss -i app/javascript/stylesheets/application.css -o app/assets/builds/application.css --watch",
+    "test": "node --test test/javascript/chat_room.test.mjs"
   }
 }
