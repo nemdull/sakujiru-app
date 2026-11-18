@@ -1,5 +1,7 @@
 # Sakujiru – 作字クリエイター向けマッチングプラットフォーム
 
+[![CI](https://github.com/nemdull/sakujiru-app/actions/workflows/ci.yml/badge.svg)](https://github.com/nemdull/sakujiru-app/actions/workflows/ci.yml)
+
 作字（タイポグラフィ）クリエイターが作品を発信し、オーダーを希望する顧客とつながるためのマッチング型 SNS です。  
 Tinder ライクなスワイプ UI、いいね一覧、ActionCable を用いたリアルタイム DM、PAY.JP 連携によるクレジットカード登録などを備えています。
 
@@ -63,16 +65,16 @@ Tinder ライクなスワイプ UI、いいね一覧、ActionCable を用いた�
 | `config/` | ルーティング、環境設定、Capistrano のデプロイ設定。 |
 | `db/` | マイグレーション・スキーマ定義・サンプルデータ (`seeds.rb`)。 |
 | `lib/` | 追加タスクやライブラリの置き場（現状は空）。 |
-| `public/` | エラーページ、favicon、Webpacker 生成物 (`packs/`)、アップロード済みファイル。 |
+| `public/` | エラーページ、favicon、アップロード済みファイル。 |
 | `storage/` | Active Storage のローカル保存先。 |
-| `test/` | Minitest ベースのモデル / コントローラ / チャネルテスト。 |
+| `test/` | Minitest のモデル / リクエスト / チャネル / ブラウザー（system）テストと、Node で動かす JavaScript のテスト。 |
 | `vendor/` | `bundle config set path 'vendor/bundle'` によりインストールされた gem。 |
 | `node_modules/` | Yarn で取得したフロントエンド依存。 |
 | `log/`, `tmp/` | 実行時ログ、PID、キャッシュなどの一時ファイル。 |
 | `Dockerfile`, `docker-compose.yml`, `entrypoint.sh` | Docker 開発環境のビルド / 起動設定。 |
 | `Gemfile`, `Gemfile.lock` | Ruby 依存関係。 |
-| `package.json`, `yarn.lock`, `package-lock.json` | JavaScript 依存関係とビルドスクリプト。 |
-| `tailwind.config.js`, `postcss.config.js`, `babel.config.js`, `.browserslistrc` | フロントエンドビルドの設定ファイル。 |
+| `package.json`, `yarn.lock` | JavaScript 依存関係とビルドスクリプト。 |
+| `tailwind.config.js`, `.browserslistrc` | フロントエンドビルドの設定ファイル。 |
 | `.env.example`, `.ruby-version`, `Capfile`, `config/deploy/`, `erd.pdf` | 環境変数テンプレ、Ruby バージョン指定、Capistrano 設定、ER 図。 |
 
 ### アプリケーションコード (`app/`)
@@ -113,7 +115,7 @@ Tinder ライクなスワイプ UI、いいね一覧、ActionCable を用いた�
   - `src/swipe.js`: スワイプ UI のリアクション処理とアニメーション。
   - `src/payjp.js`: PAY.JP Elements でカード情報をトークン化。
   - `channels/`: Action Cable 用の `chat_room_channel` と `consumer`。
-  - `packs/`: Webpacker 時代のエントリーポイント（互換維持のため残置）。
+  - `src/chat_room.mjs`: チャット画面の購読と送信。開いている部屋だけを購読する。
   - `stylesheets/`: Tailwind エントリーポイント (`application.css`)。
 - **assets/**
   - `stylesheets/`: ページ単位の SCSS。`application.scss` で束ねる。
@@ -138,7 +140,6 @@ Tinder ライクなスワイプ UI、いいね一覧、ActionCable を用いた�
 - `initializers/`: Devise、CarrierWave（S3/Fog 切り替えとログ抑止）、Kaminari、資産パイプラインなどの初期化処理。
 - `locales/`: `ja.yml` を中心に Devise メッセージや日付表記を日本語化。`en.yml` と `devise.en.yml` も同梱。
 - `deploy.rb`, `deploy/production.rb`: Capistrano 3 系の設定。Puma / Nginx / linked_dirs / SSH 鍵を指定。
-- `webpack/` と `webpacker.yml`: 旧 Webpacker 互換設定を保持。
 
 ### データベース (`db/`)
 
@@ -149,21 +150,21 @@ Tinder ライクなスワイプ UI、いいね一覧、ActionCable を用いた�
 ### テスト (`test/`)
 
 - `test_helper.rb`, `application_system_test_case.rb`: Minitest 設定と SystemTest ベースクラス。
-- `models/`: 各モデルの関連 / バリデーションテスト。
-- `controllers/`: 認証必須や CRUD のリクエストテスト。
-- `channels/`: Action Cable チャンネルの接続テスト。
+- `models/`: 検証（空・長すぎる入力、重複した「いいね」）、チャットルームの検索と作成、スワイプの束の作り方。
+- `controllers/`, `integration/`: ログイン必須、本人だけができる操作（投稿・コメントの削除）、登録とログインの流れ。
+- `channels/`: 参加している部屋だけ購読できること、発言が購読中の部屋にだけ書き込まれること。
+- `system/`: 本物のブラウザーを 3 つ開き、チャットが同じ部屋の相手にだけ届くことを確かめる。
+- `javascript/`: チャット画面のスクリプト（Enter で送信、日本語入力の変換中は送らない、など）。Node の標準のテストランナーで動く。
 - `fixtures/`: ユーザー・投稿・チャット関連のサンプルデータ。`files/` はアップロード用プレースホルダー。
-- `system/`, `integration/`, `jobs/`, `mailers/`: 追加テスト用の雛形。
+- `mailers/`, `helpers/`: 追加テスト用の雛形。
 
 ### フロントエンド / ビルド関連
 
 - `package.json`: esbuild + Tailwind + DaisyUI を使ったビルドスクリプト (`yarn build`, `build:js`, `build:css`) を定義。
-- `yarn.lock`, `package-lock.json`: Yarn / npm それぞれのロックファイル。
+- `yarn.lock`: Yarn のロックファイル。
 - `tailwind.config.js`: カスタムテーマ（`modern` カラーパレット、フォント、DaisyUI 設定）とスキャン対象。
-- `postcss.config.js`: Tailwind、postcss-import、preset-env などのプラグインチェーン。
-- `babel.config.js`: 環境別プリセットとプラグインを定義した Babel 設定。
 - `.browserslistrc`: CSS/JS トランスパイル対象ブラウザ。
-- `app/assets/builds/`, `public/packs/`: `yarn build` 実行後に生成されるバンドル成果物。
+- `app/assets/builds/`: `yarn build` 実行後に生成されるバンドル成果物。本番はここに置いたファイルをそのまま配るので、`app/javascript/` を直したら `yarn build` の結果もコミットする。
 
 ### デプロイ / 開発環境
 
@@ -176,7 +177,7 @@ Tinder ライクなスワイプ UI、いいね一覧、ActionCable を用いた�
 
 - `asset/css`: Tailwind とは別に書き出されたページ単位のプレーン CSS と SourceMap。
 - `asset/img/avater`, `asset/img/typography`: `seeds.rb` が読み込むダミー画像セット。
-- `public/`: エラーページ (`404.html` など)、`uploads/`（CarrierWave の保存先）、`packs/js`（ブラウザ読み込み用バンドル）。
+- `public/`: エラーページ (`404.html` など)、`uploads/`（CarrierWave の保存先）。
 - `bin/`: `bin/rails`, `bin/setup`, `bin/yarn` などのスクリプト群。
 - `lib/assets`, `lib/tasks`: 追加アセットや Rake タスクの置き場（現在は空）。
 - `.env.example`: DB や API キー設定のテンプレート。
@@ -323,9 +324,29 @@ Docker 上で Rails / PostgreSQL をまとめて起動する場合の手順で�
 | スワイプ (Like / Dislike) | 利用可能 | `/swipe` でカードをスワイプ可能 |
 | いいね一覧 | ベータ | サンプルデータを初期投入済み |
 | マッチング通知 / DM | 実装予定中 | 画面には注意書きを表示中 |
-| チャット画面 | ベータ | UI のみ、送受信はモック動作 |
+| チャット画面 | ベータ | 同じ部屋を開いている相手に、その場で届く。読み書きできるのは部屋の参加者だけ |
 | クレジットカード登録 | 実装予定中 | PAY.JP 連携用フォームはダミー |
 | シードデータ | 利用可能 | `asset/img/avater` / `asset/img/typography` の画像を使用 |
+
+---
+
+## テストと CI
+
+プルリクエストと `main` への push のたびに、GitHub Actions（`.github/workflows/ci.yml`）が次を順に実行します。
+
+1. JavaScript のテスト（`yarn test`）
+2. マイグレーションを最初から最後まで流す
+3. `db/schema.rb` からデータベースを作り直して、Rails のテスト（`bin/rails test`）
+4. ブラウザーを使うテスト（`bin/rails test:system`）
+
+テストで守っていること:
+
+- チャットは、部屋の参加者だけが読める・書ける（部屋の番号を知っていても、参加していなければ開けない・購読できない）
+- 投稿とコメントを消せるのは、書いた本人だけ
+- 「いいね」は 1 つの投稿に 1 人 1 つ（データベースのユニークインデックスでも保証）
+- 空のコメント・空のメッセージ・長すぎる入力は保存しない
+
+テストでは画像の加工（ImageMagick）を行わず、アップロードしたファイルは `tmp/test_uploads/` に置きます。
 
 ---
 
@@ -336,6 +357,8 @@ Docker 上で Rails / PostgreSQL をまとめて起動する場合の手順で�
 | DB 初期化 | `bin/rails db:setup` | `docker compose exec web bin/rails db:setup` |
 | マイグレーション | `bin/rails db:migrate` | 同左 |
 | テスト実行 | `bin/rails test` / `bundle exec rake test` | `docker compose exec web bin/rails test` |
+| ブラウザーを使うテスト | `bin/rails test:system`（Chrome が必要） | — |
+| JavaScript のテスト | `yarn test` | `docker compose exec web yarn test` |
 | Spring 停止 | `bin/spring stop` | `docker compose exec web bin/spring stop` |
 | アセットビルド | `yarn build`, `yarn build:js`, `yarn build:css` | `docker compose exec web yarn build` など |
 | Rails コンソール | `bin/rails console` | `docker compose exec web bin/rails console` |
@@ -398,6 +421,14 @@ Docker 上で Rails / PostgreSQL をまとめて起動する場合の手順で�
    RAILS_ENV=production bin/rails db:migrate
    ```
 4. アプリケーションサーバー (Puma 等) を再起動
+
+本番で使える環境変数:
+
+| 変数 | 既定 | 用途 |
+|------|------|------|
+| `FORCE_SSL` | `true` | Cookie に Secure を付け、HSTS を返す。TLS を手前のプロキシが受け持つ前提。HTTP のまま動かすときだけ `false` |
+| `RAILS_LOG_LEVEL` | `info` | ログの細かさ。調べものをするときだけ `debug` |
+| `PAYJP_SECRET_KEY` | なし | PAY.JP の秘密鍵。未設定のときは、カードの登録画面でお知らせを出して戻る |
 
 ---
 
