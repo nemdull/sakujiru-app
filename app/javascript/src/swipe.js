@@ -1,15 +1,14 @@
 const initSwipe = () => {
   const container = document.querySelector(".swipe--cards")
-  if (!container) return
-
-  console.debug("[swipe] initializer attached", container)
+  // 最初の表示では DOMContentLoaded と turbo:load の両方が来る。2 回つなぐと、1 回押しただけで 2 枚進んでしまう
+  if (!container || container.dataset.swipeReady) return
+  container.dataset.swipeReady = "true"
 
   const likeButton = document.getElementById("like")
   const dislikeButton = document.getElementById("dislike")
   if (!likeButton || !dislikeButton) return
 
   const handleReaction = (reaction) => {
-    console.debug("[swipe] handleReaction called with:", reaction)
     const cards = document.querySelectorAll(".swipe--card:not(.removed)")
     if (!cards.length) return
 
@@ -35,8 +34,6 @@ const initSwipe = () => {
       post_id: postId,
       reaction: reaction,
     }).toString()
-
-    console.debug("[swipe] sending reaction payload:", payload)
 
     fetch("/reactions", {
       method: "POST",

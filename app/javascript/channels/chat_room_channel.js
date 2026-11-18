@@ -1,31 +1,17 @@
 import consumer from "./consumer"
+import { connectChatRoom } from "../src/chat_room.mjs"
 
-const appChatRoom = consumer.subscriptions.create("ChatRoomChannel", {
-  connected() {
-    // Called when the subscription is ready for use on the server
-  },
+// チャットの画面を開いているあいだだけ、その部屋を購読する。
+// Turbo で画面が切り替わるたびに、前の購読をやめてから、今の画面で入り直す。
+let current = null
 
-  disconnected() {
-    // Called when the subscription has been terminated by the server
-  },
-
-  received(data) {
-    // Called when there's incoming data on the websocket for this channel
-    const chatMessages = document.getElementById('chat-messages');
-    chatMessages.insertAdjacentHTML('beforeend', data['chat_message']);
-  },
-
-  speak: function(chat_message, chat_room_id) {
-    return this.perform('speak', { chat_message: chat_message, chat_room_id: chat_room_id });
-  }
-});
-if(/chat_rooms/.test(location.pathname)) {
-  $(document).on("keydown", ".chat-room__message-form_textarea", function(e) {
-    if (e.key === "Enter") {
-      const chat_room_id = $('textarea').data('chat_room_id')
-      appChatRoom.speak(e.target.value, chat_room_id);
-      e.target.value = '';
-      e.preventDefault();
-    }
-  })
+const disconnect = () => {
+  current?.disconnect()
+  current = null
 }
+
+document.addEventListener("turbo:load", () => {
+  disconnect()
+  current = connectChatRoom(consumer)
+})
+document.addEventListener("turbo:before-cache", disconnect)

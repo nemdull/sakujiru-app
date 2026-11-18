@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2022_03_20_111306) do
+ActiveRecord::Schema[7.2].define(version: 2026_11_19_000000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -46,6 +46,7 @@ ActiveRecord::Schema[7.2].define(version: 2022_03_20_111306) do
     t.bigint "user_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["chat_room_id", "user_id"], name: "index_chat_room_users_on_chat_room_id_and_user_id", unique: true
     t.index ["chat_room_id"], name: "index_chat_room_users_on_chat_room_id"
     t.index ["user_id"], name: "index_chat_room_users_on_user_id"
   end
@@ -79,6 +80,7 @@ ActiveRecord::Schema[7.2].define(version: 2022_03_20_111306) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["post_id"], name: "index_reactions_on_post_id"
+    t.index ["user_id", "post_id"], name: "index_reactions_on_user_id_and_post_id", unique: true
     t.index ["user_id"], name: "index_reactions_on_user_id"
   end
 

@@ -6018,37 +6018,37 @@
           }
         }
         function ajaxConvert(s, response, jqXHR, isSuccess) {
-          var conv2, current, conv, tmp, prev, converters = {}, dataTypes = s.dataTypes.slice();
+          var conv2, current2, conv, tmp, prev, converters = {}, dataTypes = s.dataTypes.slice();
           if (dataTypes[1]) {
             for (conv in s.converters) {
               converters[conv.toLowerCase()] = s.converters[conv];
             }
           }
-          current = dataTypes.shift();
-          while (current) {
-            if (s.responseFields[current]) {
-              jqXHR[s.responseFields[current]] = response;
+          current2 = dataTypes.shift();
+          while (current2) {
+            if (s.responseFields[current2]) {
+              jqXHR[s.responseFields[current2]] = response;
             }
             if (!prev && isSuccess && s.dataFilter) {
               response = s.dataFilter(response, s.dataType);
             }
-            prev = current;
-            current = dataTypes.shift();
-            if (current) {
-              if (current === "*") {
-                current = prev;
-              } else if (prev !== "*" && prev !== current) {
-                conv = converters[prev + " " + current] || converters["* " + current];
+            prev = current2;
+            current2 = dataTypes.shift();
+            if (current2) {
+              if (current2 === "*") {
+                current2 = prev;
+              } else if (prev !== "*" && prev !== current2) {
+                conv = converters[prev + " " + current2] || converters["* " + current2];
                 if (!conv) {
                   for (conv2 in converters) {
                     tmp = conv2.split(" ");
-                    if (tmp[1] === current) {
+                    if (tmp[1] === current2) {
                       conv = converters[prev + " " + tmp[0]] || converters["* " + tmp[0]];
                       if (conv) {
                         if (conv === true) {
                           conv = converters[conv2];
                         } else if (converters[conv2] !== true) {
-                          current = tmp[0];
+                          current2 = tmp[0];
                           dataTypes.unshift(tmp[1]);
                         }
                         break;
@@ -6065,7 +6065,7 @@
                     } catch (e) {
                       return {
                         state: "parsererror",
-                        error: conv ? e : "No conversion from " + prev + " to " + current
+                        error: conv ? e : "No conversion from " + prev + " to " + current2
                       };
                     }
                   }
@@ -9129,7 +9129,7 @@
           Consumer3.prototype.connect = function connect() {
             return this.connection.open();
           };
-          Consumer3.prototype.disconnect = function disconnect() {
+          Consumer3.prototype.disconnect = function disconnect2() {
             return this.connection.close({
               allowReconnect: false
             });
@@ -13188,16 +13188,16 @@
       function populateIdMapWithTree(idMap, persistentIds, root, elements) {
         for (const elt of elements) {
           if (persistentIds.has(elt.id)) {
-            let current = elt;
-            while (current) {
-              let idSet = idMap.get(current);
+            let current2 = elt;
+            while (current2) {
+              let idSet = idMap.get(current2);
               if (idSet == null) {
                 idSet = /* @__PURE__ */ new Set();
-                idMap.set(current, idSet);
+                idMap.set(current2, idSet);
               }
               idSet.add(elt.id);
-              if (current === root) break;
-              current = current.parentElement;
+              if (current2 === root) break;
+              current2 = current2.parentElement;
             }
           }
         }
@@ -16484,30 +16484,59 @@
   var import_actioncable = __toESM(require_action_cable());
   var consumer_default = (0, import_actioncable.createConsumer)();
 
-  // app/javascript/channels/chat_room_channel.js
-  var appChatRoom = consumer_default.subscriptions.create("ChatRoomChannel", {
-    connected() {
-    },
-    disconnected() {
-    },
-    received(data) {
-      const chatMessages = document.getElementById("chat-messages");
-      chatMessages.insertAdjacentHTML("beforeend", data["chat_message"]);
-    },
-    speak: function(chat_message, chat_room_id) {
-      return this.perform("speak", { chat_message, chat_room_id });
-    }
-  });
-  if (/chat_rooms/.test(location.pathname)) {
-    $(document).on("keydown", ".chat-room__message-form_textarea", function(e) {
-      if (e.key === "Enter") {
-        const chat_room_id = $("textarea").data("chat_room_id");
-        appChatRoom.speak(e.target.value, chat_room_id);
-        e.target.value = "";
-        e.preventDefault();
+  // app/javascript/src/chat_room.mjs
+  function connectChatRoom(consumer2, root = document) {
+    const list = root.getElementById("chat-messages");
+    const input = root.getElementById("chat-room-message");
+    if (!list || !input || !list.dataset.chatRoomId) return null;
+    const currentUserId = Number(list.dataset.currentUserId);
+    const subscription = consumer2.subscriptions.create(
+      { channel: "ChatRoomChannel", chat_room_id: list.dataset.chatRoomId },
+      {
+        // つながっているあいだだけ data-chat-ready が付く（テストは、これを待ってから書き込む）
+        connected() {
+          list.dataset.chatReady = "true";
+        },
+        disconnected() {
+          delete list.dataset.chatReady;
+        },
+        // サーバーは「自分の発言」と「相手の発言」の両方の見た目を送ってくる。受け取った人に合うほうを足す
+        received(data) {
+          const html = Number(data.user_id) === currentUserId ? data.mine : data.theirs;
+          if (!html) return;
+          list.insertAdjacentHTML("beforeend", html);
+          list.scrollTop = list.scrollHeight;
+        }
       }
-    });
+    );
+    const onKeydown = (event) => {
+      if (event.key !== "Enter" || event.shiftKey) return;
+      if (event.isComposing || event.keyCode === 229) return;
+      event.preventDefault();
+      const text = input.value.trim();
+      if (!text) return;
+      if (subscription.perform("speak", { chat_message: text })) input.value = "";
+    };
+    input.addEventListener("keydown", onKeydown);
+    return {
+      disconnect() {
+        input.removeEventListener("keydown", onKeydown);
+        subscription.unsubscribe();
+      }
+    };
   }
+
+  // app/javascript/channels/chat_room_channel.js
+  var current = null;
+  var disconnect = () => {
+    current?.disconnect();
+    current = null;
+  };
+  document.addEventListener("turbo:load", () => {
+    disconnect();
+    current = connectChatRoom(consumer_default);
+  });
+  document.addEventListener("turbo:before-cache", disconnect);
 
   // app/javascript/src/profile_image_upload.js
   $(document).on("change", "#profile_image_upload", function(e) {
@@ -16526,13 +16555,12 @@
   // app/javascript/src/swipe.js
   var initSwipe = () => {
     const container = document.querySelector(".swipe--cards");
-    if (!container) return;
-    console.debug("[swipe] initializer attached", container);
+    if (!container || container.dataset.swipeReady) return;
+    container.dataset.swipeReady = "true";
     const likeButton = document.getElementById("like");
     const dislikeButton = document.getElementById("dislike");
     if (!likeButton || !dislikeButton) return;
     const handleReaction = (reaction) => {
-      console.debug("[swipe] handleReaction called with:", reaction);
       const cards = document.querySelectorAll(".swipe--card:not(.removed)");
       if (!cards.length) return;
       const card = cards[0];
@@ -16548,7 +16576,6 @@
         post_id: postId,
         reaction
       }).toString();
-      console.debug("[swipe] sending reaction payload:", payload);
       fetch("/reactions", {
         method: "POST",
         headers: {
