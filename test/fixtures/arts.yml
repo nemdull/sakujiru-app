@@ -6,3 +6,7 @@ aoi_logo_art:
 ren_poster_art:
   post: ren_poster
   image: sample.png
+
+mio_sign_art:
+  post: mio_sign
+  image: sample.png
