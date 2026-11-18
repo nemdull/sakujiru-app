@@ -1,15 +1,14 @@
 class ReactionsController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_current_user
 
+  # スワイプ画面から呼ばれる。reaction=dislike なら「いいね」を外し、それ以外は付ける
   def create
-    reaction = Reaction.find_by(post_id: params[:post_id], user_id: current_user.id)
+    post = Post.find(params[:post_id])
 
-    case params[:reaction]
-    when "dislike"
-      reaction&.destroy
+    if params[:reaction] == "dislike"
+      current_user.unlike(post)
     else
-      Reaction.find_or_create_by!(post_id: params[:post_id], user_id: current_user.id)
+      current_user.like(post)
     end
 
     head :ok

@@ -1,6 +1,5 @@
 class PostsController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_current_user
   before_action :set_q, only: [:index, :search]
   before_action :set_post, only: [:show, :destroy]
   before_action :authorize_owner!, only: [:destroy]
@@ -11,7 +10,7 @@ class PostsController < ApplicationController
   end
 
   def create
-    @post = Post.new(post_params)
+    @post = current_user.posts.build(post_params)
     if @post.arts.present? && @post.save
       flash[:notice] = "作品を投稿しました。"
       redirect_to posts_path
@@ -34,15 +33,11 @@ class PostsController < ApplicationController
   end
 
   def index
-    @posts = Post.page(params[:page]).per(9).includes(:arts, :user).order('created_at DESC')
+    @posts = Post.includes(:arts, :user).newest_first.page(params[:page]).per(9)
   end
 
   def swipe
-    @posts = Post.includes(:arts, :user)
-                 .where.not(user_id: current_user.id)
-                 .order(created_at: :desc)
-
-    @posts = @posts.offset(rand([@posts.count - 10, 0].max)).limit(10) if @posts.count > 10
+    @posts = Post.swipe_deck_for(current_user)
   end
 
   def search
@@ -50,21 +45,22 @@ class PostsController < ApplicationController
   end
 
   private
-    def post_params
-      params.require(:post).permit(:art_text, arts_attributes: [:image]).merge(user_id: current_user.id)
-    end
 
-    def set_q
-      @q = Post.ransack(params[:q])
-    end
+  def post_params
+    params.require(:post).permit(:art_text, arts_attributes: [:image])
+  end
 
-    def set_post
-      @post = Post.includes(:arts, :user).find(params[:id])
-    end
+  def set_q
+    @q = Post.ransack(params[:q])
+  end
 
-    def authorize_owner!
-      return if @post.user == current_user
+  def set_post
+    @post = Post.includes(:arts, :user).find(params[:id])
+  end
 
-      redirect_to posts_path, alert: "自身の投稿のみ削除できます。"
-    end
+  def authorize_owner!
+    return if @post.owned_by?(current_user)
+
+    redirect_to posts_path, alert: "自身の投稿のみ削除できます。"
+  end
 end

@@ -6,11 +6,11 @@ class RegistrationsController < Devise::RegistrationsController
     resource.update_without_current_password(params)
   end
 
-  def after_update_path_for(resource)
-    swipe_path(resource)
+  def after_update_path_for(_resource)
+    swipe_path
   end
 
-  def after_sign_up_path_for(resource)
+  def after_sign_up_path_for(_resource)
     swipe_path
   end
 end

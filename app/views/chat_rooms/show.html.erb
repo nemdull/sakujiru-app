@@ -19,14 +19,14 @@
       </div>
     </div>
 
-    <div id="chat-messages" class="space-y-3 rounded-2xl border border-surface-subtle/80 bg-base-100 px-4 py-5 max-h-96 overflow-y-auto">
+    <div id="chat-messages" data-chat-room-id="<%= @chat_room.id %>" data-current-user-id="<%= current_user.id %>" class="space-y-3 rounded-2xl border border-surface-subtle/80 bg-base-100 px-4 py-5 max-h-96 overflow-y-auto">
       <%= render @chat_messages %>
     </div>
 
     <form class="space-y-2">
       <label class="text-sm font-medium text-neutral" for="chat-room-message">メッセージ</label>
-      <textarea id="chat-room-message" data-behavior="chat_room_speaker" data-chat_room_id="<%= @chat_room.id %>" placeholder="メッセージを入力してください" class="chat-room__message-form_textarea textarea textarea-bordered w-full"></textarea>
-      <p class="text-right text-xs text-slate-400">Enter キーで送信できます。</p>
+      <textarea id="chat-room-message" maxlength="<%= ChatMessage::MAX_LENGTH %>" placeholder="メッセージを入力してください" class="chat-room__message-form_textarea textarea textarea-bordered w-full"></textarea>
+      <p class="text-right text-xs text-slate-400">Enter キーで送信、Shift + Enter で改行できます。</p>
     </form>
   </div>
 </section>

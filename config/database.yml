@@ -76,5 +76,5 @@ production:
   <<: *default
   database: sakujiru_production
   username: postgres
-  password: <%= Rails.application.credentials.db[:password] %>
-  host: <%= Rails.application.credentials.db[:hostname] %>
+  password: <%= Rails.application.credentials.dig(:db, :password) %>
+  host: <%= Rails.application.credentials.dig(:db, :hostname) %>

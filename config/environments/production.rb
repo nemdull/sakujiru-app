@@ -21,7 +21,6 @@ Rails.application.configure do
   # Disable serving static files from the `/public` folder by default since
   # Apache or NGINX already handles this.
   config.public_file_server.enabled = true
-  config.server_static_files = true
 
   # CSS is built by cssbundling (Dart Sass) into app/assets/builds.
   # Do not use Sprockets' :sass compressor to avoid libsass/sassc dependency.
@@ -46,11 +45,16 @@ Rails.application.configure do
   # config.action_cable.allowed_request_origins = [ 'http://example.com', /http:\/\/example.*/ ]
 
   # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
-  # config.force_ssl = true
+  # TLS は手前のプロキシ（Render など）が受け持つ前提にして、Cookie に Secure を付け、HSTS を返す。
+  # HTTP のまま動かす環境では、環境変数 FORCE_SSL=false で外せる
+  if ENV.fetch("FORCE_SSL", "true") == "true"
+    config.assume_ssl = true
+    config.force_ssl = true
+  end
 
   # Use the lowest log level to ensure availability of diagnostic information
   # when problems arise.
-  config.log_level = :debug
+  config.log_level = ENV.fetch("RAILS_LOG_LEVEL", "info")
 
   # Prepend all log lines with the following tags.
   config.log_tags = [ :request_id ]

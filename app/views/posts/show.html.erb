@@ -48,9 +48,9 @@
       <span class="badge badge-modern"><%= @comments.size %> 件</span>
     </div>
 
-    <div class="space-y-4" id="chat-messages">
+    <div class="space-y-4" id="comments">
       <% @comments.each do |comment| %>
-        <% comment_user = User.find_by(id: comment.user_id) %>
+        <% comment_user = comment.user %>
         <div class="flex gap-3 rounded-2xl border border-surface-subtle/70 bg-base-100 px-4 py-3">
           <div class="avatar">
             <div class="h-9 w-9 rounded-full border border-surface-subtle bg-base-200">
@@ -69,6 +69,9 @@
               <span class="text-xs text-slate-400">
                 <%= comment.created_at ? comment.created_at.strftime("%Y/%m/%d %H:%M") : "日時不明" %>
               </span>
+              <% if comment.written_by?(current_user) %>
+                <%= button_to "削除", post_comment_path(@post, comment), method: :delete, data: { turbo_confirm: "コメントを削除しますか？" }, form_class: "ml-auto", class: "btn btn-ghost btn-xs text-slate-400" %>
+              <% end %>
             </div>
             <p class="mt-1 text-sm text-slate-600 whitespace-pre-line"><%= comment.comment %></p>
           </div>
