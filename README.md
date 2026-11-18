@@ -81,12 +81,12 @@ Tinder ライクなスワイプ UI、いいね一覧、ActionCable を用いた�
 ### アプリケーションコード (`app/`)
 
 - **controllers/**
-  - `application_controller.rb`: Devise の許可パラメータと `set_current_user` を定義。
+  - `application_controller.rb`: Devise の許可パラメータを定義。
   - `cards_controller.rb`: PAY.JP でのカード登録・表示・削除を担当。
-  - `chat_rooms_controller.rb`: DM ルームの作成と参加者ビュー (`show`) を実装。
-  - `comments_controller.rb`: 投稿へのコメント作成。
+  - `chat_rooms_controller.rb`: DM ルームの作成と表示。開けるのは、自分が参加しているルームだけ。
+  - `comments_controller.rb`: 投稿へのコメントの作成と削除（削除は書いた本人だけ）。
   - `matching_controller.rb`: いいね済み投稿（`Reaction`）の一覧表示。
-  - `posts_controller.rb`: 投稿の作成 / 一覧 / 詳細 / 削除、スワイプ UI、`ransack` 検索を提供。
+  - `posts_controller.rb`: 投稿の作成 / 一覧 / 詳細 / 紹介文の編集 / 削除（編集と削除は持ち主だけ）、スワイプ UI、`ransack` 検索を提供。
   - `reactions_controller.rb`: スワイプ操作からのいいね / 取り消しを非同期で処理。
   - `registrations_controller.rb`, `sessions_controller.rb`: Devise の遷移先をカスタマイズ（登録・ログイン後は `swipe_path`）。
   - `top_controller.rb`: LP 表示用トップページ。
@@ -94,11 +94,11 @@ Tinder ライクなスワイプ UI、いいね一覧、ActionCable を用いた�
   - `concerns/`: 将来の共通モジュール置き場（現状は空）。
 - **models/**
   - `user.rb`: Devise 認証と投稿・コメント・リアクション・チャット・カードとの関連、プロフィール画像アップロード。
-  - `post.rb`: 作字投稿本体。`arts` のネスト登録と `ransack` 用許可属性を定義。
+  - `post.rb`: 作字投稿本体。`arts` のネスト登録と `ransack` 用許可属性、スワイプに出す束（`swipe_deck_for`）を定義。
   - `art.rb`: 投稿画像モデル。CarrierWave + MiniMagick で 1080px にリサイズ。
-  - `comment.rb`, `reaction.rb`: コメントとリアクション。`reaction` はユーザー × 投稿でユニーク制約。
+  - `comment.rb`, `reaction.rb`: コメントとリアクション。`reaction` はユーザー × 投稿でユニーク（モデルの検証と、データベースのインデックスの両方）。
   - `card.rb`: PAY.JP の `customer_id` と `card_id` を保持。
-  - `chat_room.rb`, `chat_room_user.rb`, `chat_message.rb`: DM のルーム・参加者・メッセージを表現。`ChatMessage` 作成時に Action Cable にブロードキャスト。
+  - `chat_room.rb`, `chat_room_user.rb`, `chat_message.rb`: DM のルーム・参加者・メッセージを表現。`ChatMessage` を保存すると、そのルームを開いている人にだけ Action Cable で届ける。参加していない人のメッセージは保存しない。
   - `application_record.rb`, `concerns/`: Rails 標準のベースクラスと共通モジュール置き場。
 - **views/**
   - `layouts/`, `partial/`: 共通レイアウトとヘッダー / フッター、フラッシュ表示。
@@ -112,6 +112,7 @@ Tinder ライクなスワイプ UI、いいね一覧、ActionCable を用いた�
   - `kaminari/`: ページネーション用テーマ。
 - **javascript/**
   - `application.js`: Turbo / jQuery / Rails UJS / ActiveStorage を初期化し、アプリ固有の JS を読み込むエントリーポイント。
+  - `src/jquery.js`: jQuery を `window.$` に置く。`$` を使うスクリプトより先に読み込む必要があるので、`application.js` の先頭で読み込む。
   - `src/profile_image_upload.js`: プロフィール画像の即時プレビュー。
   - `src/swipe.js`: スワイプ UI のリアクション処理とアニメーション。
   - `src/payjp.js`: PAY.JP Elements でカード情報をトークン化。
@@ -126,9 +127,9 @@ Tinder ライクなスワイプ UI、いいね一覧、ActionCable を用いた�
 - **uploaders/**
   - `ImageUploader`: 投稿画像をローカル or S3 に保存し、`:medium` バージョンを生成。
   - `ProfileImageUploader`: プロフィール画像用アップローダー（400px サムネイル）。
-- **jobs/**
-  - `chat_message_broadcast_job.rb`: 作成されたチャットメッセージを Action Cable へ配信。
-- **channels/application_cable/**: WebSocket 接続のベースクラス。
+- **channels/**
+  - `chat_room_channel.rb`: チャットの購読と発言。購読できるのは参加しているルームだけで、発言の書き込み先も購読中のルームに固定。
+  - `application_cable/`: WebSocket 接続のベースクラス（ログインしていなければ接続を断る）。
 - **helpers/**: `ApplicationHelper#user_avatar` で initials ベースの SVG アバターを生成。
 - **mailers/**: `ApplicationMailer`（現状デフォルト設定）。
 
