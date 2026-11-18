@@ -1,7 +1,7 @@
 // Rails 7 entrypoint (jsbundling-rails)
+// jQuery は、$ を使うスクリプトより前に読み込む（理由は src/jquery.js）
+import "./src/jquery"
 import "@hotwired/turbo-rails"
-import jquery from "jquery"
-window.$ = window.jQuery = jquery
 
 // Optional: keep UJS features if used (data-remote, method links)
 import RailsUJS from "@rails/ujs"
